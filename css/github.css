@@ -1,0 +1,23 @@
+body {
+        	padding-top: 60px;
+}
+
+#photo {
+	width: 100px;
+	height: 100px;
+}
+
+.button-icon {
+	width: 30px;
+	height: 30px;
+}
+
+.fill {
+	background-color: #eee;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	box-shadow: 1px 1px 5px #888888;
+	width: 700px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+}
