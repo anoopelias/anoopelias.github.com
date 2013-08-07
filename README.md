@@ -1,4 +1,4 @@
-anoopelias.github.com
+anoopelias.github.io
 =====================
 
 Github Home
