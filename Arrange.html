@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auto Arrange</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/github.css" rel="stylesheet">
+    <link rel="icon" type="image/ico" href="/img/favicon.ico"/>
+  	<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+  	<script src="js/bootstrap.min.js"></script>
+  	<script src="js/arrangeDemo.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+        <div class="row">
+            <div class="span9 panel">
+               <canvas id="surface" width="600" height="500"/>
+            </div>
+            <div class="span3">
+                <label for="p">No. of Points</label>
+                <input id="p" type="text" placeholder="#"/>
+                <label for="c">No. of Connections</label>
+                <input id="c" type="text" placeholder="# less than p * p"/>
+                <br>
+                <br>
+                <button class="btn" id="gen">Generate</button>
+            </div>
+        </div>
+    </div>
+
+  </body>
+</html>

@@ -1,5 +1,6 @@
 body {
-        	padding-top: 60px;
+    padding-top: 60px;
+    padding-bottom: 20px;
 }
 
 #photo {
@@ -19,5 +20,16 @@ body {
 	box-shadow: 1px 1px 5px #888888;
 	width: 700px;
 	border-radius: 5px;
-	-moz-border-radius: 5px;
+}
+.panel {
+	background-color : #eee;
+	padding-top : 20px;
+	padding-bottom : 20px;
+	box-shadow : 1px 1px 5px #888888;
+	border-radius : 5px;
+}
+
+#surface {
+    width : 600px;
+    height : 500px;
 }
