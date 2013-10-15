@@ -1,9 +1,9 @@
 
 (function($) {
-    var ctx = null;
+    var surface;
     $(document).ready( function() {
-        var surface = $('#surface')[0];
-        ctx = surface.getContext('2d');
+        surface = SVG('surface').size(600, 500);
+
         var p = {};
         p.x = 70;
         p.y = 70;
@@ -15,10 +15,7 @@
     });
 
     var plot = function(p) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 3, 0, 2*Math.PI);
-        ctx.closePath();
-        ctx.fill();
+        surface.circle(6).attr({fill: '#000'}).move(p.x, p.y);
     };
 
 }(jQuery));
