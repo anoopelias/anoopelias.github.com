@@ -9,6 +9,43 @@ var surface = (function ($) {
     
     surface.generate = function(pn, cn) {
 
+        var connectedPoints = {
+            n : pn,
+            c : randomConnections(pn, cn)
+        }
+        
+        surface.place(connectedPoints);
+
+        return connectedPoints;
+    };
+
+    surface.place = function(connectedPoints) {
+        //TODO: Assuming square grid
+        gridN = Math.ceil(Math.sqrt(connectedPoints.n));
+        gridW = Math.round(w / gridN);
+        
+        $('#surface').empty();
+        sNode = SVG('surface').size(w, w);
+        
+        plotConnectedPoints(connectedPoints);
+        
+    };
+    
+    var plotConnectedPoints = function(connectedPoints) {
+        var points = randomPositions(connectedPoints.n);
+        for(var i=0; i<connectedPoints.n; i++) {
+            plotPoint(points[i]);
+        }
+    }
+    
+    var plotPoint = function(p) {
+        var x = p.x * gridW + Math.round(gridW / 2);
+        var y = p.y * gridW + Math.round(gridW / 2);
+        
+        sNode.circle(6).attr({fill: '#000'}).move(x, y);
+    };
+    
+    var randomConnections = function(pn, cn) {
         /*
         Generating a power set will take quadratic complexiety, Nevertheless,
         can't find a better way to generate a random subset without duplicates.
@@ -25,21 +62,12 @@ var surface = (function ($) {
 
         // Shuffle the power set
         shuffle(powSet);
-
-        var connectedPoints = {
-            n : pn,
-            c : powSet.slice(0, cn) // Splice the first cn to get random connections.
-        }
         
-        surface.place(connectedPoints);
-
-        return connectedPoints;
+        
+        return powSet.slice(0, cn) // Splice the first cn to get random connections.        
     };
 
-    surface.place = function(connectedPoints) {
-        //TODO: Assuming square grid
-        gridN = Math.ceil(Math.sqrt(connectedPoints.n));
-        gridW = Math.round(w / gridN);
+    var randomPositions = function(n) {
         
         var powSet = [];
         for(var i=0; i<gridN; i++) {
@@ -53,24 +81,9 @@ var surface = (function ($) {
         
         shuffle(powSet);
         
-        var points = powSet.slice(0, connectedPoints.n);
-        
-        
-        $('#surface').empty();
-        sNode = SVG('surface').size(w, w);
-        
-        for(var i=0; i<connectedPoints.n; i++) {
-            plotPoint(points[i]);
-        }
-        
-    };
-    
-    var plotPoint = function(p) {
-        var x = p.x * gridW + Math.round(gridW / 2);
-        var y = p.y * gridW + Math.round(gridW / 2);
-        
-        sNode.circle(6).attr({fill: '#000'}).move(x, y);
-    };
+        return powSet.slice(0, n);
+
+    }
 
     //@ http://jsfromhell.com/array/shuffle [v1.0]
     function shuffle(o){ //v1.0
