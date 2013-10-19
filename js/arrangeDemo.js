@@ -24,9 +24,8 @@
     var genRandom = function(e) {
         if(validate()) {
             console.log('validation pass');
-            
         } else {
-            console.log('validation fail');
+            message('Validation Error', 'Invalid Inputs');
         }
     };
 
@@ -46,5 +45,17 @@
 
         return true;
     };
+
+    var message = function(title, message) {
+       $('#messageModalTitle').html(title);
+       $('#messageModalBody').html(message);
+       $('#messageModal').modal(); 
+    }
+
+    var surface = {};
+
+    surface.plotRandom = function(pn, cn) {
+    }
+
 
 }(jQuery));
