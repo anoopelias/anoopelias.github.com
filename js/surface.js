@@ -34,13 +34,32 @@ var surface = (function ($) {
         var points = randomPositions(connectedPoints.n);
         for(var i=0; i<connectedPoints.n; i++)
             plotPoint(points[i]);
+            
+        var connections = connectedPoints.c;
+            
+        for(var i=0; i<connections.length; i++)
+            plotConnection(points[connections[i].from], points[connections[i].to]);
     }
     
     var plotPoint = function(p) {
-        var x = p.x * gridW + Math.round(gridW / 2);
-        var y = p.y * gridW + Math.round(gridW / 2);
+        var pos = position(p);
+        sNode.circle(6).attr({fill: '#000'}).move(pos.x, pos.y);
+    };
+    
+    var plotConnection = function(from, to) {
+        var fromPos = position(from);
+        var toPos = position(to);
         
-        sNode.circle(6).attr({fill: '#000'}).move(x, y);
+        sNode.line(fromPos.x, fromPos.y, toPos.x, toPos.y)
+             .stroke({width : 1});
+    }
+
+    var position = function(p) {
+        return {
+            x : p.x * gridW + Math.round(gridW / 2),
+            y : p.y * gridW + Math.round(gridW / 2)
+        }
+        
     };
     
     var randomConnections = function(pn, cn) {
