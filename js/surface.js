@@ -1,9 +1,11 @@
 var surface = (function ($) {
     var surface = {};
-    var svgNode = null;
+    var sNode = null;
+    var w = 600;
+    var h = 500;
     
     $(function() {
-        svgNode = SVG('surface').size(600, 500);
+        sNode = SVG('surface').size(w, h);
     });
 
     surface.generate = function(pn, cn) {
@@ -27,7 +29,7 @@ var surface = (function ($) {
 
         var connectedPoints = {
             n : pn,
-            c : powSet.slice(cn) // Splice the first cn to get random connections.
+            c : powSet.slice(0, cn) // Splice the first cn to get random connections.
         }
         
         surface.place(connectedPoints);
@@ -36,7 +38,7 @@ var surface = (function ($) {
     }
 
     surface.place = function(connectedPoints) {
-        console.log(svgNode);
+        
         
     }
 
