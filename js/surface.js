@@ -13,7 +13,6 @@ var surface = (function ($) {
             n : pn,
             c : randomConnections(pn, cn)
         }
-        
         surface.place(connectedPoints);
 
         return connectedPoints;
@@ -33,9 +32,8 @@ var surface = (function ($) {
     
     var plotConnectedPoints = function(connectedPoints) {
         var points = randomPositions(connectedPoints.n);
-        for(var i=0; i<connectedPoints.n; i++) {
+        for(var i=0; i<connectedPoints.n; i++)
             plotPoint(points[i]);
-        }
     }
     
     var plotPoint = function(p) {
@@ -47,37 +45,27 @@ var surface = (function ($) {
     
     var randomConnections = function(pn, cn) {
         /*
-        Generating a power set will take quadratic complexiety, Nevertheless,
+        Generating a power set will take quadratic complexity, Nevertheless,
         can't find a better way to generate a random subset without duplicates.
         */
         var powSet = [];
-        for(var i=0; i<pn; i++) {
-            for(var j=i+1; j<pn; j++) {
-                powSet.push({
-                    from : i,
-                    to : j
-                });
-            }
-        }
+        for(var i=0; i<pn; i++)
+            for(var j=i+1; j<pn; j++)
+                powSet.push({from : i, to : j});
 
         // Shuffle the power set
         shuffle(powSet);
         
         
-        return powSet.slice(0, cn) // Splice the first cn to get random connections.        
+        return powSet.slice(0, cn); // Splice the first cn to get random connections.        
     };
 
     var randomPositions = function(n) {
         
         var powSet = [];
-        for(var i=0; i<gridN; i++) {
-            for(var j=0; j<gridN; j++) {
-                powSet.push({
-                    x : i,
-                    y : j
-                })
-            }
-        }
+        for(var i=0; i<gridN; i++)
+            for(var j=0; j<gridN; j++)
+                powSet.push({x : i, y : j});
         
         shuffle(powSet);
         
