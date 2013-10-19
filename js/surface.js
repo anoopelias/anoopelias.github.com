@@ -1,13 +1,12 @@
 var surface = (function ($) {
     var surface = {};
     var sNode = null;
-    var w = 600;
-    var h = 500;
+    var gridN = -1;
+    var gridW = -1;
     
-    $(function() {
-        sNode = SVG('surface').size(w, h);
-    });
-
+    // Assuming square grid
+    var w = 500;
+    
     surface.generate = function(pn, cn) {
 
         /*
@@ -35,17 +34,50 @@ var surface = (function ($) {
         surface.place(connectedPoints);
 
         return connectedPoints;
-    }
+    };
 
     surface.place = function(connectedPoints) {
+        //TODO: Assuming square grid
+        gridN = Math.ceil(Math.sqrt(connectedPoints.n));
+        gridW = Math.round(w / gridN);
+        
+        var powSet = [];
+        for(var i=0; i<gridN; i++) {
+            for(var j=0; j<gridN; j++) {
+                powSet.push({
+                    x : i,
+                    y : j
+                })
+            }
+        }
+        
+        shuffle(powSet);
+        
+        var points = powSet.slice(0, connectedPoints.n);
         
         
-    }
+        $('#surface').empty();
+        sNode = SVG('surface').size(w, w);
+        
+        for(var i=0; i<connectedPoints.n; i++) {
+            plotPoint(points[i]);
+        }
+        
+    };
+    
+    var plotPoint = function(p) {
+        var x = p.x * gridW + Math.round(gridW / 2);
+        var y = p.y * gridW + Math.round(gridW / 2);
+        
+        sNode.circle(6).attr({fill: '#000'}).move(x, y);
+    };
 
     //@ http://jsfromhell.com/array/shuffle [v1.0]
     function shuffle(o){ //v1.0
         for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
     };
+    
+    
     return surface;
 })(jQuery);
