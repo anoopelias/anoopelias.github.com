@@ -1,29 +1,17 @@
 
 (function($) {
-    var surface;
     var pn;
     var cn;
     $(document).ready( function() {
-        surface = SVG('surface').size(600, 500);
-        $('#gen').click(genRandom);
+        $('#gen').click(generate);
 
-        var p = {};
-        p.x = 70;
-        p.y = 70;
-        plotpoint(p);
-        
-        p.x = 300;
-        p.y = 270;
-        plotpoint(p);
     });
 
-    var plotpoint = function(p) {
-        surface.circle(6).attr({fill: '#000'}).move(p.x, p.y);
-    };
-
-    var genRandom = function(e) {
+    var generate = function(e) {
         if(validate()) {
             console.log('validation pass');
+            var points = surface.generate(pn, cn);
+            console.log(points);
         } else {
             message('Validation Error', 'Invalid Inputs');
         }
@@ -51,11 +39,5 @@
        $('#messageModalBody').html(message);
        $('#messageModal').modal(); 
     }
-
-    var surface = {};
-
-    surface.plotRandom = function(pn, cn) {
-    }
-
 
 }(jQuery));
