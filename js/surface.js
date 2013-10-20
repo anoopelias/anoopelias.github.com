@@ -29,6 +29,9 @@ var surface = (function ($) {
         plotConnectedPoints(connectedPoints);
         
     };
+
+    surface.arrange = function() {
+    };
     
     var plotConnectedPoints = function(connectedPoints) {
         var points = randomPositions(connectedPoints.n);

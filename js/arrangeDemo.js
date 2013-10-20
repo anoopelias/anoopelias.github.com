@@ -4,9 +4,13 @@
     var cn;
     $(document).ready( function() {
         $('#gen').click(generate);
+        $('#arr').click(arrange);
 
     });
 
+    var arrange = function(e) {
+       surface.arrange(); 
+    };
     var generate = function(e) {
         if(validate()) {
             console.log('validation pass');
