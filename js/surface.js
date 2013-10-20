@@ -39,11 +39,11 @@ var surface = (function ($) {
             
         for(var i=0; i<connections.length; i++)
             plotConnection(points[connections[i].from], points[connections[i].to]);
-    }
+    };
     
     var plotPoint = function(p) {
         var pos = position(p);
-        sNode.circle(6).attr({fill: '#000'}).move(pos.x, pos.y);
+        sNode.circle(6).attr({fill: '#000'}).center(pos.x, pos.y);
     };
     
     var plotConnection = function(from, to) {
@@ -52,7 +52,7 @@ var surface = (function ($) {
         
         sNode.line(fromPos.x, fromPos.y, toPos.x, toPos.y)
              .stroke({width : 1});
-    }
+    };
 
     var position = function(p) {
         return {
@@ -73,6 +73,7 @@ var surface = (function ($) {
                 powSet.push({from : i, to : j});
 
         // Shuffle the power set
+        // TODO: Probably you don't have to shuffle the entire set
         shuffle(powSet);
         
         
@@ -90,7 +91,7 @@ var surface = (function ($) {
         
         return powSet.slice(0, n);
 
-    }
+    };
 
     //@ http://jsfromhell.com/array/shuffle [v1.0]
     function shuffle(o){ //v1.0
