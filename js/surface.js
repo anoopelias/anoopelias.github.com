@@ -26,22 +26,22 @@ var surface = (function ($) {
         $('#surface').empty();
         sNode = SVG('surface').size(w, w);
         
-        plotConnectedPoints(connectedPoints);
+        var places = randomPlaces(connectedPoints.n);
+        plotConnectedPoints(connectedPoints, places);
         
     };
 
     surface.arrange = function() {
     };
     
-    var plotConnectedPoints = function(connectedPoints) {
-        var points = randomPositions(connectedPoints.n);
+    var plotConnectedPoints = function(connectedPoints, places) {
         for(var i=0; i<connectedPoints.n; i++)
-            plotPoint(points[i]);
+            plotPoint(places[i]);
             
         var connections = connectedPoints.c;
             
         for(var i=0; i<connections.length; i++)
-            plotConnection(points[connections[i].from], points[connections[i].to]);
+            plotConnection(places[connections[i].from], places[connections[i].to]);
     };
     
     var plotPoint = function(p) {
@@ -83,7 +83,7 @@ var surface = (function ($) {
         return powSet.slice(0, cn); // Splice the first cn to get random connections.        
     };
 
-    var randomPositions = function(n) {
+    var randomPlaces = function(n) {
         
         var powSet = [];
         for(var i=0; i<gridN; i++)
