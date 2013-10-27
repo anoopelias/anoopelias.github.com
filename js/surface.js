@@ -1,66 +1,66 @@
 var surface = (function ($) {
     var surface = {};
     var sNode = null;
-    var gridN = -1;
-    var gridW = -1;
+
+    var points = null;
+    var positions = null;
     
     // Assuming square grid
     var w = 500;
     
     surface.generate = function(pn, cn) {
 
-        var connectedPoints = {
+        var points = {
             n : pn,
             c : randomConnections(pn, cn)
         }
-        surface.place(connectedPoints);
+        surface.place(points);
 
-        return connectedPoints;
+        return points;
     };
 
-    surface.place = function(connectedPoints) {
-        //TODO: Assuming square grid
-        gridN = Math.ceil(Math.sqrt(connectedPoints.n));
-        gridW = Math.round(w / gridN);
-        
+    surface.place = function(points) {
+        grid.init(points.n, w);
+
         $('#surface').empty();
         sNode = SVG('surface').size(w, w);
         
-        var places = randomPlaces(connectedPoints.n);
-        plotConnectedPoints(connectedPoints, places);
+        positions = randomPositions(points.n);
+        plotPoints(points, positions);
         
     };
 
     surface.arrange = function() {
+        arrange.arrange(points, positions);
     };
     
-    var plotConnectedPoints = function(connectedPoints, places) {
-        for(var i=0; i<connectedPoints.n; i++)
-            plotPoint(places[i]);
+    var plotPoints = function(points, positions) {
+        for(var i=0; i<points.n; i++)
+            plotPoint(positions[i]);
             
-        var connections = connectedPoints.c;
+        var connections = points.c;
             
         for(var i=0; i<connections.length; i++)
-            plotConnection(places[connections[i].from], places[connections[i].to]);
+            plotConnection(positions[connections[i].from], positions[connections[i].to]);
     };
     
     var plotPoint = function(p) {
-        var pos = position(p);
-        sNode.circle(6).attr({fill: '#000'}).center(pos.x, pos.y);
+        var p = cordinates(p);
+        sNode.circle(6).attr({fill: '#000'}).center(p.x, p.y);
     };
     
     var plotConnection = function(from, to) {
-        var fromPos = position(from);
-        var toPos = position(to);
+        var from = cordinates(from);
+        var to = cordinates(to);
         
-        sNode.line(fromPos.x, fromPos.y, toPos.x, toPos.y)
+        sNode.line(from.x, from.y, to.x, to.y)
              .stroke({width : 1});
     };
 
-    var position = function(p) {
+    var cordinates = function(p) {
         return {
-            x : p.x * gridW + Math.round(gridW / 2),
-            y : p.y * gridW + Math.round(gridW / 2)
+            x : p.x * grid.W + Math.round(grid.W / 2),
+            y : p.y * grid.W + Math.round(grid.W / 2)
         }
         
     };
@@ -83,11 +83,11 @@ var surface = (function ($) {
         return powSet.slice(0, cn); // Splice the first cn to get random connections.        
     };
 
-    var randomPlaces = function(n) {
+    var randomPositions = function(n) {
         
         var powSet = [];
-        for(var i=0; i<gridN; i++)
-            for(var j=0; j<gridN; j++)
+        for(var i=0; i<grid.N; i++)
+            for(var j=0; j<grid.N; j++)
                 powSet.push({x : i, y : j});
         
         shuffle(powSet);
