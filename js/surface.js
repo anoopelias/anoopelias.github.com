@@ -1,10 +1,6 @@
 var surface = (function ($) {
     var surface = {};
-    var sNode = null;
 
-    var points = null;
-    var positions = null;
-    
     // Assuming square grid
     var w = 500;
     
@@ -13,7 +9,7 @@ var surface = (function ($) {
         var points = {
             n : pn,
             c : randomConnections(pn, cn)
-        }
+        };
         surface.place(points);
 
         return points;
@@ -23,20 +19,26 @@ var surface = (function ($) {
         grid.init(points.n, w);
 
         $('#surface').empty();
-        sNode = SVG('surface').size(w, w);
+        surface.node = SVG('surface').size(w, w);
         
-        positions = randomPositions(points.n);
-        plotPoints(points, positions);
+        surface.points = points;
+        surface.positions = randomPositions(points.n);
+        plotPoints(surface.points, surface.positions);
         
     };
 
     surface.arrange = function() {
-        arrange.arrange(points, positions);
+        surface.positions = 
+            arrange.arrange(surface.points, surface.positions);
+
+        $('#surface').empty();
+        surface.node = SVG('surface').size(w, w);
+        plotPoints(surface.points, surface.positions);
     };
     
     var plotPoints = function(points, positions) {
         for(var i=0; i<points.n; i++)
-            plotPoint(positions[i]);
+            plotPoint(i, positions[i]);
             
         var connections = points.c;
             
@@ -44,16 +46,17 @@ var surface = (function ($) {
             plotConnection(positions[connections[i].from], positions[connections[i].to]);
     };
     
-    var plotPoint = function(p) {
+    var plotPoint = function(id, p) {
         var p = cordinates(p);
-        sNode.circle(6).attr({fill: '#000'}).center(p.x, p.y);
+        surface.node.circle(6).attr({fill: '#000'}).center(p.x, p.y);
+        surface.node.text(id + "").move(p.x, p.y);
     };
     
     var plotConnection = function(from, to) {
         var from = cordinates(from);
         var to = cordinates(to);
         
-        sNode.line(from.x, from.y, to.x, to.y)
+        surface.node.line(from.x, from.y, to.x, to.y)
              .stroke({width : 1});
     };
 
