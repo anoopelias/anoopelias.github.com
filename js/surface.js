@@ -18,21 +18,24 @@ var surface = (function ($) {
     surface.place = function(points) {
         grid.init(points.n, w);
 
-        $('#surface').empty();
-        surface.node = SVG('surface').size(w, w);
-        
         surface.points = points;
         surface.positions = randomPositions(points.n);
-        plotPoints(surface.points, surface.positions);
         
+        surface.plot();
     };
 
     surface.arrange = function() {
         surface.positions = 
             arrange.arrange(surface.points, surface.positions);
+        
+        surface.plot();
 
+    };
+
+    surface.plot = function() {
         $('#surface').empty();
         surface.node = SVG('surface').size(w, w);
+
         plotPoints(surface.points, surface.positions);
     };
     
@@ -48,6 +51,7 @@ var surface = (function ($) {
     
     var plotPoint = function(id, p) {
         var p = cordinates(p);
+
         surface.node.circle(6).attr({fill: '#000'}).center(p.x, p.y);
         surface.node.text(id + "").move(p.x, p.y);
     };

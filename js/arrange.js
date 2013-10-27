@@ -3,12 +3,42 @@ var arrange = (function() {
 
     arrange.arrange = function(points, positions) {
         var map = toMap(points, positions);
-        map = randomNeighbor(points, map);
-        return toPositions(points, map);
+        var en = energy(points, positions);
+
+        // Gradient Decent
+        for(var i=0; i<20; i++) {
+            var newMap = randomNeighbor(points, map);
+            var newPositions = toPositions(points, newMap);
+            var newEnergy = energy(points, newPositions);
+
+            console.log(i + " : " + newEnergy);
+
+            if(newEnergy < en) {
+                en = newEnergy;
+                map = newMap;
+                positions = newPositions;
+            }
+        }
+        
+        return positions;
     };
 
-    var energy = function(points, map) {
-        //TODO : Calculate Energy
+    var energy = function(points, positions) {
+        var energy = 0.0;
+        for(var i=0; i<points.c.length; i++) {
+            var conn = points.c[i];
+            var from = positions[conn.from];
+            var to = positions[conn.to];
+
+            var dist = Math.sqrt(
+                Math.pow((to.x - from.x), 2) +
+                Math.pow((to.y - from.y), 2) 
+            );
+
+            energy += dist;
+        }
+
+        return energy;
     };
 
     var randomNeighbor = function(points, map) {
@@ -21,6 +51,16 @@ var arrange = (function() {
 
         console.log("P" + randP);
         console.log("D" + randD);
+
+        // copy to new map
+        var newMap = new Array(grid.N);
+        for(var i=0; i< grid.N; i++) {
+            newMap[i] = new Array(grid.N);
+            for(var j=0; j<grid.N; j++) {
+                newMap[i][j] = map[i][j];
+            }
+        }
+        map = newMap;
 
         // Moving column up
         if(randD === 0) {
