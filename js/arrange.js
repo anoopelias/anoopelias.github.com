@@ -24,21 +24,28 @@ var arrange = (function() {
     };
 
     var energy = function(points, positions) {
-        var energy = 0.0;
+        var totDist = 0.0;
+        var totPointsOnLine = 0;
         for(var i=0; i<points.c.length; i++) {
             var conn = points.c[i];
-            var from = positions[conn.from];
-            var to = positions[conn.to];
+
+            var line = {};
+            line.from = positions[conn.from];
+            line.to = positions[conn.to];
 
             var dist = Math.sqrt(
-                Math.pow((to.x - from.x), 2) +
-                Math.pow((to.y - from.y), 2) 
+                Math.pow((line.to.x - line.from.x), 2) +
+                Math.pow((line.to.y - line.from.y), 2) 
             );
 
-            energy += dist;
+            var noPointsOnLine = pointsOnLine(positions, line);
+
+            totDist += dist;
+            totPointsOnLine += noPointsOnLine;
         }
 
-        return energy;
+        // TODO: Assign weight to distance and points on line
+        return totDist + totPointsOnLine;
     };
 
     var randomNeighbor = function(points, map) {
@@ -48,9 +55,6 @@ var arrange = (function() {
 
         // Random direction
         var randD = Math.floor(Math.random() * 4);
-
-        console.log("P" + randP);
-        console.log("D" + randD);
 
         // copy to new map
         var newMap = new Array(grid.N);
@@ -109,6 +113,7 @@ var arrange = (function() {
             map[i] = new Array(grid.N);
         }
 
+        // Mapping
         for(var i=0; i<points.n; i++) {
             var pos = positions[i];
             map[pos.x][pos.y] = i;
@@ -132,6 +137,50 @@ var arrange = (function() {
         }
 
         return positions;
+    };
+
+    var pointsOnLine = function(positions, line) {
+        var cnt = 0;
+
+        for (var i=0; i<positions.length; i++) {
+            if (isPointOnLine(positions[i], line))
+                cnt++;
+        }
+
+        return cnt;
+    };
+
+    var isPointOnLine = function(point, line) {
+        var crossProduct = (line.from.y - line.to.y) * (point.x - line.to.x)
+            - (line.from.x - line.to.x) * (point.y - line.to.y);
+
+        if (crossProduct !=0 )
+            return false;
+
+        if (!isBetween(point.x, line.from.x, line.to.x))
+            return false;
+
+        if (!isBetween(point.y, line.from.y, line.to.y))
+            return false;
+
+        return true;
+
+    };
+
+    var isBetween = function(x, a, b) {
+        if(a < b) {
+            if (!(x>a && x<b))
+                return false;
+        } else if (b < a) {
+            if (!(x>b && x<a))
+                return false;
+        } else if(a === b) {
+            if (!(a===x))
+                return false;
+        }
+
+        return true;
+
     };
 
     return arrange;
