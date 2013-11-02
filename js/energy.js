@@ -1,29 +1,51 @@
 var arrange = (function(arr) {
 
     arr.energy = function(points, positions) {
+        var avgLen = avgConnLen(points, positions);
+        var avgPoints = avgPointsOnLine(points, positions);
+
+        // TODO: Assign weight to len and points on line
+        return avgLen + avgPoints;
+    };
+
+    var avgConnLen = function(points, positions) {
+        var len = points.c.length;
         var totDist = 0.0;
+
+        for(var i=0; i<len; i++) {
+            var conn = points.c[i];
+
+            var from = positions[conn.from];
+            var to = positions[conn.to];
+
+            totDist += Math.sqrt(
+                Math.pow((to.x - from.x), 2) +
+                Math.pow((to.y - from.y), 2) 
+            );
+        }
+
+        return totDist / len;
+
+    };
+
+    var avgPointsOnLine = function(points, positions) {
+        var len = points.c.length;
         var totPointsOnLine = 0;
-        for(var i=0; i<points.c.length; i++) {
+
+        for(var i=0; i<len; i++) {
             var conn = points.c[i];
 
             var line = {};
             line.from = positions[conn.from];
             line.to = positions[conn.to];
 
-            var dist = Math.sqrt(
-                Math.pow((line.to.x - line.from.x), 2) +
-                Math.pow((line.to.y - line.from.y), 2) 
-            );
-
-            var noPointsOnLine = pointsOnLine(positions, line);
-
-            totDist += dist;
-            totPointsOnLine += noPointsOnLine;
+            totPointsOnLine += pointsOnLine(positions, line);
         }
 
-        // TODO: Assign weight to distance and points on line
-        return totDist + totPointsOnLine;
+        return totPointsOnLine / len;
+
     };
+
 
     var pointsOnLine = function(positions, line) {
         var cnt = 0;
