@@ -62,7 +62,7 @@ var arrange = (function(arr) {
         var crossProduct = (line.from.y - line.to.y) * (point.x - line.to.x)
             - (line.from.x - line.to.x) * (point.y - line.to.y);
 
-        if (crossProduct !=0 )
+        if (crossProduct !== 0 )
             return false;
 
         if (!isBetween(point.x, line.from.x, line.to.x))
@@ -83,7 +83,7 @@ var arrange = (function(arr) {
             if (!(x>b && x<a))
                 return false;
         } else if(a === b) {
-            if (!(a===x))
+            if (a !== x)
                 return false;
         }
 
