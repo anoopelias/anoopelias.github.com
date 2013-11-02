@@ -59,8 +59,8 @@ var arrange = (function(arr) {
     };
 
     var isPointOnLine = function(point, line) {
-        var crossProduct = (line.from.y - line.to.y) * (point.x - line.to.x)
-            - (line.from.x - line.to.x) * (point.y - line.to.y);
+        var crossProduct = (line.from.y - line.to.y) * (point.x - line.to.x) - 
+            (line.from.x - line.to.x) * (point.y - line.to.y);
 
         if (crossProduct !== 0 )
             return false;
