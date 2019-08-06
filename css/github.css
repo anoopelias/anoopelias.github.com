@@ -12,6 +12,13 @@ body {
 	height: 30px;
 }
 
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .fill {
 	background-color: #eee;
 	padding-top: 20px;
@@ -20,4 +27,8 @@ body {
 	width: 700px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
+}
+
+.next {
+    margin-top: 20px;
 }
