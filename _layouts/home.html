@@ -12,24 +12,6 @@ layout: default
   </div>
 
   <ul class="post-list">
-      <h2 id="{{ this_year }}-ref" class="post-year">Side projects</h2>
-      <ul>
-      <li>
-          <a class="black-link link-layout" href="https://anoopelias.github.io/tranquility-calendar/">
-              Tranquility Calendar
-          </a>
-      </li>
-      <li>
-          <a class="black-link link-layout" href="https://github.com/anoopelias/matasano">
-              Solutions for Cryptopals Challenges in Rust
-          </a>
-      </li>
-      <li>
-          <a class="black-link link-layout" href="http://anoopelias.github.io/boids/">
-              Boids Simulation
-          </a>
-      </li>
-      </ul>
   {%- if site.posts.size > 0 -%}
       {% for post in site.posts  %}
       {% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
@@ -60,6 +42,24 @@ layout: default
           {% endif %}
       {% endif %}
   {% endfor %}
+      <h2 id="{{ this_year }}-ref" class="post-year">Side projects</h2>
+      <ul>
+      <li>
+          <a class="black-link link-layout" href="https://anoopelias.github.io/tranquility-calendar/">
+              Tranquility Calendar
+          </a>
+      </li>
+      <li>
+          <a class="black-link link-layout" href="https://github.com/anoopelias/matasano">
+              Solutions for Cryptopals Challenges in Rust
+          </a>
+      </li>
+      <li>
+          <a class="black-link link-layout" href="http://anoopelias.github.io/boids/">
+              Boids Simulation
+          </a>
+      </li>
+      </ul>
   {%- endif -%}
   </ul>
 </div>
