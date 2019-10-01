@@ -129,7 +129,6 @@ Let's look at the 'Virtual Servers' table I have put up on my Belkin configurati
 Here we are saying that if an incoming request on the router comes on port 22 (SSH) or port 5901 (VNC), it needs to be forwarded to the Pi (`192.168.2.12`). On the other hand, if it comes on port 80, forward it to the laptop (`192.168.2.40`).
 
 **Now to the current problem:** _Even after adding Virtual Servers, SSH on my public IP fails..._ :worried:.
-
 ```
 $ ssh pi@106.51.241.13
 ssh: connect to host 106.51.241.13 port 22: Connection timed out
@@ -139,8 +138,6 @@ I am guessing that the TCP handshake is not reaching the router, this could be a
 
 ---
 ### UPnP
-
-Meanwhile, we won't give up without putting up a fight!
 
 How can we prove that the TCP handshake is not reaching the router? The router does not have an OS in it, its some kind of firmware that is running there. Can we see what is going on inside? Keep looking!
 
@@ -157,7 +154,6 @@ pi@raspberrypi:~ $ sudo apt-get install miniupnpc
 ```
 
 And,
-
 ```
 pi@raspberrypi:~ $ upnpc -l
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
@@ -181,7 +177,6 @@ GetGenericPortMappingEntry() returned 713 (SpecifiedArrayIndexInvalid)
 ```
 
 Okay, so our Belkin supports this, let us add SSH port on our Pi,
-
 ```
 pi@raspberrypi:~ $ upnpc -e 'SSH on Raspberry Pi' -r 22 TCP
 upnpc : miniupnpc library test client. (c) 2005-2014 Thomas Bernard
@@ -204,7 +199,6 @@ Ha, it gets added!
 ![](https://i.imgur.com/SKnzvfm.png)
 
 But sadly, no luck even then,
-
 ```
 $ ssh pi@10.242.204.104
 ssh: connect to host 10.242.204.104 port 22: Connection refused
@@ -219,4 +213,4 @@ Even though the outcome is not positive, this has been a wonderful learning expe
 
 When you start digging, you might go really deep. Be careful to bring your head above once in a while to see what you are doing.
 
-\* You would need NAT for outgoing TCP connections as well. Think about it, TCP is a duplex protocol. So a packet coming from outside needs to find its way to the 'Private IP'. However, the port numbers are internally managed by the router.
+\* You would need NAT for outgoing TCP connections as well. Think about it, TCP is a duplex protocol. So a packet coming from outside needs to find its way to the 'Private IP'. However, those port numbers are internally managed by the router.
