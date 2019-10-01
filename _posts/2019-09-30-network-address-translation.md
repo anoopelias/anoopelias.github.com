@@ -5,22 +5,18 @@ categories: tech
 author: Anoop Elias
 ---
 
-I had a _Raspberry Pi 3_ lying around, and I had a great idea. Let's host a [Tor relay](https://www.eff.org/torchallenge/what-is-tor.html)! This is the story of that failed mission. Do you copy?
-
----
-
-So last day I was watching this movie, G R A V I T Y, again. One hell of a movie isn't it? If this one doesn't make you a fan of Sandra Bullock, then I don't know what does! Anyway,
+I had a _Raspberry Pi 3_ lying around, and I had a great idea. Let's host a [Tor relay](https://www.eff.org/torchallenge/what-is-tor.html)! This is the story of that _failed_ mission.
 
 To host a Tor relay, you need two things,
  - A fairly good internet connection,
  - A computer that can be online almost all the time,
 
-or so I thought. But as you might have guessed, the devil is in the details! We will get there in due course.
+or so I thought. But the devil is in the details! We will get there in due course.
 
 ---
 ### Pi Setup
 
-The Pi already had an SD card. I had a wireless keyboard, mouse, and a monitor with HDMI. The typical micro USB phone chargers are not powerful enough for a Pi 3. Thankfully I had this figured already and had ordered one.
+The Pi already had an SD card. I had a wireless keyboard, mouse, and monitor with HDMI. The typical micro USB phone chargers are not powerful enough for a Pi 3. Thankfully I had this figured already and had ordered one.
 
 ![](https://i.imgur.com/Qw9P7BW.jpg)
 
@@ -42,9 +38,9 @@ pi@raspberrypi:~ $ sudo systemctl enable ssh
 pi@raspberrypi:~ $ sudo systemctl start ssh
 ```
 
-The easiest way to find the IP of your device without even touching it is to go to the DHCP Client List of your router. Finding the IP is like this is very useful once you have the Pi connected to network sitting in some corner without an attached keyboard or monitor. Please note, you are looking for the '_Private_ IP' of the Pi. More on this later.
+The easiest way to find the IP of your device without even touching it is to go to the DHCP Client List of your router. Finding the IP is like this is very useful once you have the Pi connected to the network sitting in some corner without an attached keyboard or monitor.
 
-Open your browser on the laptop and go to [http://192.168.2.1/](http://192.168.2.1/). Well, I am on Belkin. You gotta figure out [whats yours](https://www.techspot.com/guides/287-default-router-ip-addresses/). For most routers, DHCP Client List will be there in the menu once you login.
+Open your browser on the laptop and hit your [routers IP](https://www.techspot.com/guides/287-default-router-ip-addresses/). For Belkin, it is [http://192.168.2.1/](http://192.168.2.1/). For most routers, DHCP Client List will be there in the menu once you log in.
 
 ![](https://i.imgur.com/7fuhQmt.png)
 
@@ -66,14 +62,12 @@ Last login: Sun Sep 29 22:05:06 2019 from 192.168.2.40
 pi@raspberrypi:~ $
 ```
 
-We're just getting warmed up!
+We're just getting started..
 
 ---
 ### Remote Pi
 
-Now this is a computer that needs to be connected by wire to the router sitting on top of my fridge. Its a small board, it can sit close to its home. But, I can't get a monitor next to it. Solution: _VNC_.
-
-For those of you who are not so amused, VNC is Virtual Network Computing, its a universal remote desktop mechanism that can work across Windows, macOS, and Linux. Let's get the server running.
+Now, this is a computer that needs to be connected by wire to the router sitting on top of my fridge. It's a small board, it can sit close to its home. But, I can't get a monitor next to it. Solution: _VNC_.
 
 ```
 pi@raspberrypi:~ $ sudo apt-get install tightvncserver
@@ -88,18 +82,14 @@ $ sudo apt-get install vncviewer
 $ vncviewer
 ```
 
-On the prompt, enter the enter the private IP of Pi `192.168.2.12`. And!
-
+On the prompt, enter the private IP of Pi `192.168.2.12`. But alas!
 ```
-$ vncviewer
 vncviewer: ConnectToTcpAddr: connect: Connection refused
 Unable to connect to VNC server
 $
 ```
 
-Hmm.. ! Actually, this took some time to figure out.
-
-Back in Pi, when we made sure the vncserver is running,
+Hmm.. ! Actually, this took some time to figure out. Back in Pi, when we made sure the vncserver is running,
 
 ```
 pi@raspberrypi:~ $ ps aux | grep vnc
@@ -107,7 +97,7 @@ pi         754  0.1  1.8  56068 17148 ?        S    12:18   0:47 Xtightvnc :1 -d
 pi@raspberrypi:~ $
 ```
 
-Read that one real close. Xtightvnc is running on port 5901, not on its default 5900. For whatever reason.
+Look at it real close. Xtightvnc is running on port 5901, not on its default 5900. For whatever reason!
 
 Okay then try `vncviewer` again, but this time, the host is `192.168.2.12:5901`.
 
@@ -118,26 +108,25 @@ Voila! Pi goes all the way to the top of the fridge.. :joy: Let's get on with th
 ---
 ### Network Address Translation
 
-_For Pi to be a Tor relay, it needs to be accessible from public network._
+_For Pi to be a Tor relay, it needs to be accessible from the public network._
 
-When you are connected to the Internet, it only means that your PC can access the computers in the Internet. It doesn't mean that those computers (or people) can access your PC. There will be an umpteen number of firewalls to prevent that to happen. On top of that, since the Internet is [running out of IPV4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion), the router puts up a concept called 'NAT'.
+When you are connected to the Internet, it only means that your PC can access the computers on the Internet. It doesn't mean that those computers (or people) can access your PC. There will be an umpteen number of firewalls to prevent that to happen. On top of that, since the Internet is [running out of IPV4 addresses](https://en.wikipedia.org/wiki/IPv4_address_exhaustion), the router puts up a concept called 'NAT'.
 
-
-Yes, this is where we talk about 'Private IP' and 'Public IP'. Hopefully the concept will be clear with the picture below,
+This is where we talk about 'Private IP' and 'Public IP'. Hopefully, the concept will be clear with the picture below,
 
 ![](https://i.imgur.com/mRFpBr3.png)
 
-When the 'Private IP: F' accesss lets say 'Public IP: B', from B's point of view the request is coming from your router's 'Public IP: D' \*. Only your router gets a public IP, while your PCs, phones, smart TVs, all those will get only a 'Private IP'!
+When the 'Private IP: F' access let's say 'Public IP: B', from B's point of view the request is coming from your router's 'Public IP: D'\*. Only your router gets a public IP, while your PCs, phones, smart TVs, all those will get only a 'Private IP'!
 
-Now to the million dollar question : If 'Public IP: B' wants to access 'Private IP: F', how is that possible? 'B' is not even aware of the existance of 'F'!
+Now to the million-dollar question: If 'Public IP: B' wants to access 'Private IP: F', how is that possible? 'B' is not even aware of the existence of 'F'!
 
-That magic, my friends, is called 'Network Address Translation' a.k.a. 'NAT'. The trick is simple. You use both IP and port for mapping. Eventhough we are running short of IPs, we have no shortage of ports. Each IP can handle over 65000+ ports.
+That magic is called 'Network Address Translation' a.k.a. 'NAT'. The trick is simple. You use both IP and port for the mapping. Even though we are running short of IPs, we have no shortage of ports. Each IP can handle over 65000+ ports.
 
 Let's look at the 'Virtual Servers' table I have put up on my Belkin configuration,
 
 ![](https://i.imgur.com/bjC9wno.png)
 
-Here we are saying that if an incoming request on the router comes on port 22 (SSH) or port 5901 (VNC), it needs to be forwarded to the Pi (`192.168.2.12`). On the other hand, if it comes on port 80, forward it to laptop (`192.168.2.40`).
+Here we are saying that if an incoming request on the router comes on port 22 (SSH) or port 5901 (VNC), it needs to be forwarded to the Pi (`192.168.2.12`). On the other hand, if it comes on port 80, forward it to the laptop (`192.168.2.40`).
 
 **Now to the current problem:** _Even after adding Virtual Servers, SSH on my public IP fails..._ :worried:.
 
@@ -146,22 +135,22 @@ $ ssh pi@106.51.241.13
 ssh: connect to host 106.51.241.13 port 22: Connection timed out
 ```
 
-I am guessing that the TCP handshake is not reaching the router, this could be a firewall with my ISP, they could be blocking these incoming connections before even it reaches the router. This is a home network after all. I have raised a ticket with them, and is waiting for a reply as we speak.
+I am guessing that the TCP handshake is not reaching the router, this could be a firewall with my ISP, they could be blocking these incoming connections before even it reaches the router. This is a home network after all. I have raised a ticket with them and am waiting for a reply as we speak.
 
 ---
 ### UPnP
 
 Meanwhile, we won't give up without putting up a fight!
 
-How can we prove that the TCP handshake is not reaching the router? Router do not have an OS in it, its some kind of firmware that is running there. Can we see what is going on inside? Keep looking!
+How can we prove that the TCP handshake is not reaching the router? The router does not have an OS in it, its some kind of firmware that is running there. Can we see what is going on inside? Keep looking!
 
 ![](https://i.imgur.com/njfmNKP.png)
 
 Hmm... Interesting! Whenever the BitTorrent client starts on a PC, a set of NAT rules gets added automatically on the router. How come?
 
-Did a bit more digging. It seems, there is a protocol called [Universal Plug n Play (UPnP)](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) that most of the network devices support. With that you can programmatically add a NAT rule into the router. While we are at it, let's try that too.
+Did a bit more digging. It seems, there is a protocol called [Universal Plug n Play (UPnP)](https://en.wikipedia.org/wiki/Universal_Plug_and_Play) that most of the network devices support. With that, you can programmatically add a NAT rule into the router. While we are at it, let's try that too.
 
-The [MiniUPnP](http://miniupnp.free.fr/) project provides tools to do this from command line,
+The [MiniUPnP](http://miniupnp.free.fr/) project provides tools to do this from the command line,
 
 ```
 pi@raspberrypi:~ $ sudo apt-get install miniupnpc
@@ -221,13 +210,13 @@ $ ssh pi@10.242.204.104
 ssh: connect to host 10.242.204.104 port 22: Connection refused
 ```
 
-Maybe lets call it a day and let those ISP folks to get back.
+Maybe let's call it a day and let those ISP folks get back.
 
 ---
 
 ### Finally..
-Eventhough the outcome is not positive, this has been a wonderful learning experience. I have a Pi in my home which I can remote into whenever I feel like. And always looking to do more things with the Pi.
+Even though the outcome is not positive, this has been a wonderful learning experience. I have a Pi in my home which I can remote into whenever I feel like. And always looking to do more things with the Pi.
 
-When you start digging, you might go really deep. Be carful to bring your head above once in a while to see what you are doing.
+When you start digging, you might go really deep. Be careful to bring your head above once in a while to see what you are doing.
 
-\* You would need NAT for outgoing requests as well. Think about it, TCP is a duplex protocol. So a packet coming from outside needs to find its way to the 'Private IP'. However, it is internally managed by the router.
+\* You would need NAT for outgoing TCP connections as well. Think about it, TCP is a duplex protocol. So a packet coming from outside needs to find its way to the 'Private IP'. However, the port numbers are internally managed by the router.
