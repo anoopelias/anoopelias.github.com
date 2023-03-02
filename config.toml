@@ -1,0 +1,4 @@
+baseURL = 'https://anoopelias.github.io/'
+languageCode = 'en-us'
+title = "Anoop's page"
+theme = 'PaperMod'
