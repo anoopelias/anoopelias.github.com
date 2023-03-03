@@ -3,6 +3,7 @@ layout: post
 title: "Network Address Translation"
 categories: tech
 author: Anoop Elias
+date: "2019-10-01"
 ---
 
 I had a _Raspberry Pi 3_ lying around, and I had a great idea. Let's host a [Tor relay](https://www.eff.org/torchallenge/what-is-tor.html)! This is the story of that _failed_ mission.

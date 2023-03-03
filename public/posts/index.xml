@@ -5,13 +5,14 @@
     <link>https://anoopelias.github.io/posts/</link>
     <description>Recent content in Posts on Anoop&#39;s page</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://anoopelias.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Tue, 01 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://anoopelias.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Network Address Translation</title>
-      <link>https://anoopelias.github.io/posts/2019-10-01-network-address-translation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <link>https://anoopelias.github.io/posts/network-address-translation/</link>
+      <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://anoopelias.github.io/posts/2019-10-01-network-address-translation/</guid>
+      <guid>https://anoopelias.github.io/posts/network-address-translation/</guid>
       <description>I had a Raspberry Pi 3 lying around, and I had a great idea. Let&amp;rsquo;s host a Tor relay! This is the story of that failed mission.
 To host a Tor relay, you need two things,
 A fairly good internet connection, A computer that can be online almost all the time, or so I thought. But the devil is in the details! We will get there in due course.
