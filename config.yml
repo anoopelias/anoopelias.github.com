@@ -1,0 +1,24 @@
+baseURL: 'https://anoopelias.github.io/'
+languageCode: en-us
+title: Anoop's page
+theme: PaperMod
+params:
+    ShowReadingTime: true
+    homeInfoParams:
+        Title: Anoop Elias
+        Content: |
+          Application Developer at /thoughtworks,\
+          Lives in Bangalore, India
+    socialIcons:
+        - name: "Github"
+          url: "https://github.com/anoopelias/"
+        - name: "LinkedIn"
+          url: "https://www.linkedin.com/in/anoopelias/"
+        - name: "Stackoverflow"
+          url: "https://stackoverflow.com/users/1328888/anoopelias"
+          
+    assets:
+        favicon: "/assets/favicon.ico"
+        favicon16x16: "/assets/favicon-16x16.png"
+        favicon32x32: "/assets/favicon-32x32.png"
+
