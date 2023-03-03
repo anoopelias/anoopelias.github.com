@@ -19,5 +19,14 @@ A fairly good internet connection, A computer that can be online almost all the 
 Pi Setup The Pi already had an SD card.</description>
     </item>
     
+    <item>
+      <title>Side Projects</title>
+      <link>https://anoopelias.github.io/side-projects/side-projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://anoopelias.github.io/side-projects/side-projects/</guid>
+      <description> Boids Simulation Tranquility Calendar Cryptopals solutions in Rust </description>
+    </item>
+    
   </channel>
 </rss>

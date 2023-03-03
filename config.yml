@@ -22,3 +22,10 @@ params:
         favicon16x16: "/assets/favicon-16x16.png"
         favicon32x32: "/assets/favicon-32x32.png"
 
+menu:
+    main:
+        - identifier: side-projects
+          name: side projects
+          url: /side-projects/side-projects
+          weight: 10
+
