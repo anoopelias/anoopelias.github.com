@@ -368,6 +368,8 @@ Albeit written in C, [Redis](https://github.com/redis/redis/blob/bfe50a30edff683
 
 Thanks for reading, let me know in the comments what you think, if anything needs further clarification, or if you would want to see a Linux / Windows implementation, whatever. Please be kind, I'm fairly new to Go 😃.
 
+Post your comments in Hacker News [here](https://news.ycombinator.com/item?id=35026940).
+
 ## Epilogue
 
 Redis natively provides a client tool to benchmark implementations<sup>**</sup>, so while we are at it, why not capture some benchmarks,
