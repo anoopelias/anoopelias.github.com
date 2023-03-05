@@ -8,10 +8,6 @@ date: "2023-03-05"
 
 “Single Threaded Even Loop” or simply “Event Loop” is a fairly well-known concept in the programming world. This concept was popularized early on by GUI frameworks and JavaScript engines running in browsers and later by Node.js as well. The important advantage of this construct is we can stop worrying about “thread safety” altogether. Thread safety comes for free because all you have is only one thread anyway.
 
-Now, I’ve heard blanket statements about the performance of Node.js applications due to its lack of multiple threads. This is kind of silly, but a counterargument would need a post of its own. However, I will state this:
-- Node.js is used in several production workloads.
-- Redis runs on a Single Threaded Event Loop!
-
 ## What is an "Event Loop"?
 
 I will try to explain this with an example that I read long back (I forgot where).
