@@ -4,6 +4,8 @@ title: "Side Projects"
 categories: tech
 ---
 
+- [Cryptopals solutions in Rust](https://github.com/anoopelias/matasano)
 - [Boids Simulation](http://anoopelias.github.io/boids/)
 - [Tranquility Calendar](https://anoopelias.github.io/tranquility-calendar/)
-- [Cryptopals solutions in Rust](https://github.com/anoopelias/matasano)
+- [Solutions to Advent of Code](https://github.com/anoopelias/adventofcode)
+- [Redis implementation in Go](https://github.com/anoopelias/redis-go)
