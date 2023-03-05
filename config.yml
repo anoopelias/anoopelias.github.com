@@ -27,7 +27,7 @@ params:
 menu:
     main:
         - identifier: side-projects
-          name: side projects
+          name: My side projects
           url: /side-projects/side-projects
           weight: 10
 
