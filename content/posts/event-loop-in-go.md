@@ -8,6 +8,8 @@ date: "2023-03-05"
 
 “Single Threaded Even Loop” or simply “Event Loop” is a fairly well-known concept in the programming world. This concept was popularized early on by GUI frameworks and JavaScript engines running in browsers and later by Node.js as well. The important advantage of this construct is we can stop worrying about “thread safety” altogether. Thread safety comes for free because all you have is only one thread anyway.
 
+Another great example of usage of a Single Threaded Event Loop is Redis. Redis commands run on Event Loop as well.
+
 ## What is an "Event Loop"?
 
 I will try to explain this with an example that I read long back (I forgot where).
