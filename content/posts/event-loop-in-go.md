@@ -368,7 +368,7 @@ Thanks for reading, let me know in the comments what you think, if anything need
 
 Post your comments in Hacker News [here](https://news.ycombinator.com/item?id=35026940).
 
-## Epilogue
+### Benchmarks
 
 Redis natively provides a client tool to benchmark implementations<sup>**</sup>, so while we are at it, why not capture some benchmarks,
 
