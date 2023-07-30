@@ -3,7 +3,7 @@ layout: post
 title: "WASM Micro Runtime with Rust"
 categories: tech
 author: Anoop Elias
-date: "2023-07-27"
+date: "2023-07-30"
 ---
 
 Traditionally, microcontrollers are known to be able to run only C code. Firmware developers will usually have an Eclipse-based IDE as well as a custom compiler toolchain to compile the code against the  target. This has been changing a lot. For example, [MicroPython](https://micropython.org/) has become popular recently. RaspberryPi Pico, ExpressIf's ESP32 are some microcontrollers that have fairly good support for MicroPython. See antirez's [talk32](https://github.com/antirez/talk32) project, which attempts to improve the MicroPython tooling and developer workflow for ESP32.
