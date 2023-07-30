@@ -123,7 +123,7 @@ And that brings us to the current state of the art, as given by the WAMR's sampl
 
 ## Running Rust "Hello World!"
 
-Let's start with a simple `Hello World!`,
+Let's start with a simple `Hello World!` in a `main.rs`,
 
 ```
 fn main() {
