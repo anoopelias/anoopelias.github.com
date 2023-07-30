@@ -430,4 +430,6 @@ Thanks for reading. Again, all the code discussed in this post is available in t
 
 ---
 
+**Credits**: [Excalidraw](https://excalidraw.com/)
+
 \* AOT or Ahead-of-Time compilation, is a WASM feature that WAMR can support. This means the `*.wasm` file will be compiled specific to the target; however, this improves the efficiency of WASM execution by a significant margin. We might explore this idea in a future post.
