@@ -37,7 +37,7 @@ Here is the entire setup (pretty simple, I would say):
 
 ## Running C "Hello World!"
 
-WAMR already has a [sample `Hello World!` program](https://github.com/bytecodealliance/wasm-micro-runtime/tree/main/product-mini/app-samples/hello-world) compiled for WASM. Let us use the same approach and get it running.
+WAMR already has a [sample Hello World! program](https://github.com/bytecodealliance/wasm-micro-runtime/tree/17f62ad472b04add0e5c53fd99a3746b7b3ea131/product-mini/app-samples/hello-world) compiled for WASM. Let us use the same approach and get it running.
 
 ### Compile C to WASM
 Let's first take this simple C program, compile it to WASM, and try to run it.
