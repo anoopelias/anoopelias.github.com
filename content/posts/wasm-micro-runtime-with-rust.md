@@ -426,7 +426,9 @@ We were able to run a Rust-compiled WASM over ESP32 using WAMR. While the approa
 
 It has been an incredible learning experience to get this to work. I am looking forward to learning more about Rust, WASM, and microcontrollers.
 
-Thanks for reading. Again, all the code discussed in this post is available in the GitHub repo [here](https://github.com/anoopelias/hello-wasm-esp32). Let me know your thoughts, please feel free to open an issue in the GitHub repo with your comments.
+Thanks for reading. Again, all the code discussed in this post is available in the GitHub repo [here](https://github.com/anoopelias/hello-wasm-esp32).
+
+Post your comments in Hacker News [here](https://news.ycombinator.com/item?id=36944054).
 
 ---
 
