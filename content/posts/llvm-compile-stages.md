@@ -155,7 +155,7 @@ This creates `main.o` and `util.o`, again independent of each other.
 
 ### Step 3: Linking
 
-In this stage, the linker will combine the object files along with system libarary object files into a single executable. This is slightly complex command since we need to provide that paths for system files.
+In this stage, the linker will combine the object files along with system library object files into a single executable. This is a slightly complex command since we need to provide that path for system files.
 
 ```
 $ ld -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk \
@@ -164,7 +164,7 @@ $ ld -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk \
 	-lSystem /opt/homebrew/Cellar/llvm/16.0.6/lib/clang/16/lib/darwin/libclang_rt.osx.a
 ```
 
-This genrates the executable `main`, which we can run,
+This generates the executable `main`, which we can run,
 
 ```
 $ ./main
