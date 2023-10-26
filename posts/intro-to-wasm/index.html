@@ -1,0 +1,351 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>Introduction to WebAssembly | Anoop's page</title><meta name=keywords content><meta name=description content="I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?
+So here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works."><meta name=author content="Anoop Elias"><link rel=canonical href=https://anoopelias.github.io/posts/intro-to-wasm/><link crossorigin=anonymous href=/assets/css/stylesheet.6a98292fb8fa8cf0f3ba4042d4b75515c04267550f3ad49ff6271b5af9562443.css integrity="sha256-apgpL7j6jPDzukBC1LdVFcBCZ1UPOtSf9icbWvlWJEM=" rel="preload stylesheet" as=style><script defer crossorigin=anonymous src=/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG+9vmJ0cTS+ovo0FeA=" onload=hljs.initHighlightingOnLoad()></script>
+<link rel=icon href=https://anoopelias.github.io/assets/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://anoopelias.github.io/assets/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://anoopelias.github.io/assets/favicon-32x32.png><link rel=apple-touch-icon href=https://anoopelias.github.io/apple-touch-icon.png><link rel=mask-icon href=https://anoopelias.github.io/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--hljs-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:title" content="Introduction to WebAssembly"><meta property="og:description" content="I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?
+So here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works."><meta property="og:type" content="article"><meta property="og:url" content="https://anoopelias.github.io/posts/intro-to-wasm/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2023-10-25T00:00:00+00:00"><meta property="article:modified_time" content="2023-10-25T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Introduction to WebAssembly"><meta name=twitter:description content="I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?
+So here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":2,"name":"Posts","item":"https://anoopelias.github.io/posts/"},{"@type":"ListItem","position":3,"name":"Introduction to WebAssembly","item":"https://anoopelias.github.io/posts/intro-to-wasm/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"Introduction to WebAssembly","name":"Introduction to WebAssembly","description":"I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?\nSo here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works.","keywords":[],"articleBody":"I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?\nSo here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works.\nCaveats Before we proceed further, few things to call out,\nThis REPL is not strictly built according to Wasm spec. Some rules are relaxed to make it easy to use within a REPL prompt. For example, the prompt acts as the inside of a Wasm func, so you can do, say an (i32.const 12). However, unlike the inside of a Wasm func, you can also define a new func on the prompt. We don’t have full coverage of all features of Wasm yet. What is covered is documented here. If you would like to see a particular feature implemented, please feel free to open an issue. Or a PR. Now that is out of the way,\nHow to install wasmrepl This is built as Rust’s cargo-based binary, so,\n$ cargo install wasmrepl And then,\n$ wasmrepl \u003e\u003e To exit the prompt, use CTRL-D.\nNumeric instructions Integer operations Let’s try some simple numeric instructions,\n\u003e\u003e (i32.const 12) [12] \u003e\u003e WebAssembly (abbreviated Wasm) is a binary instruction format for a stack-based virtual machine [ref]. As soon as an instruction is executed, the REPL will print the current stack. Let us insert one more,\n\u003e\u003e (i32.const 18) [12, 18] \u003e\u003e Now that there are two values in the stack, let us add them together,\n\u003e\u003e (i32.add) [30] \u003e\u003e We can use the drop instruction to remove value from the stack as well,\n\u003e\u003e (drop) [] \u003e\u003e Let’s do a few more instructions,\n\u003e\u003e (i32.const 15) (i32.const 12) [15, 12] \u003e\u003e (i32.sub) [3] \u003e\u003e (i32.const 15) (i32.mul) [45] \u003e\u003e (i32.const 3) (i32.div_s) [15] \u003e\u003e (drop) [] \u003e\u003e You noticed the _s in div_s! Let us talk a little bit about signed and unsigned operations,\nWhile Wasm allows only signed values on the stack (i32, i64, f32 \u0026 f64), it still allows unsigned operations. Unsigned operations are essentially an operation assuming both the values in the stack are ‘unsigned bit representations’ of the value. For example, if we insert -1 (i32) into the stack, the unsigned operation will assume it is 4294967295 (0xFFFFFFFF)\nTo prove the difference, let us take the value 0x80000000. If this value is considered signed, then its value will be -214783648. If it is unsigned, then the value will be 214783648. A signed division and an unsigned division of the same number will give different values as below,\n\u003e\u003e (i32.div_s (i32.const 0x80000000) (i32.const 2)) [-1073741824] \u003e\u003e (drop) [] \u003e\u003e (i32.div_u (i32.const 0x80000000) (i32.const 2)) [1073741824] \u003e\u003e (drop) [] \u003e\u003e Again you might have noticed, the concise form. Meaning, the following two sets of instructions are exactly same.\n(i32. (i32.const x) (i32.const y)) (i32.const x) (i32.const y) (i32.) Similar to div, a rem (reminder) operation also works for both signed and unsigned numbers,\n\u003e\u003e (i32.rem_s (i32.const 10) (i32.const 3)) [1] \u003e\u003e (drop) [] \u003e\u003e (i32.rem_s (i32.const 10) (i32.const -3)) [1] \u003e\u003e (drop) [] \u003e\u003e (i32.rem_u (i32.const 10) (i32.const -3)) [10] \u003e\u003e (drop) [] \u003e\u003e Now let’s look at bitwise operations. These will work how you would expect it to,\n\u003e\u003e (i32.and (i32.const 9) (i32.const 7)) [1] \u003e\u003e (i32.or (i32.const 8) (i32.const 7)) [1, 15] \u003e\u003e (i32.xor (i32.const 9) (i32.const 7)) [1, 15, 14] \u003e\u003e (drop) (drop) (drop) [] \u003e\u003e And the shifts, (obviously the ‘right shift’ can be ‘signed’ or ‘unsigned’),\n\u003e\u003e (i32.shl (i32.const 1) (i32.const 2)) [4] \u003e\u003e (i32.shr_s (i32.const 2)) [1] \u003e\u003e (drop) [] \u003e\u003e (i32.shr_s (i32.const -2) (i32.const 1)) [-1] \u003e\u003e (i32.shr_u (i32.const -2) (i32.const 1)) [-1, 2147483647] \u003e\u003e (drop) (drop) [] And rotations too,\n\u003e\u003e (i32.rotl (i32.const 0x80000001) (i32.const 1)) [3] \u003e\u003e (i32.rotr (i32.const 1)) [-2147483647] \u003e\u003e (drop) [] \u003e\u003e Other types of instructions are comparison instructions,\n\u003e\u003e (i32.eq (i32.const 5) (i32.const 2)) [0] \u003e\u003e (i32.eq (i32.const 5) (i32.const 5)) [0, 1] \u003e\u003e (drop drop) [] \u003e\u003e (i32.ne (i32.const 5) (i32.const 2)) [1] \u003e\u003e (i32.ne (i32.const 5) (i32.const 5)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e There are ’less than’ and ‘greater than’ comparisons too, these have both ‘signed’ and ‘unsigned’ versions available,\n\u003e\u003e (i32.lt_s (i32.const 4) (i32.const 5)) [1] \u003e\u003e (i32.lt_s (i32.const 6) (i32.const 5)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e (i32.lt_s (i32.const 0xFFFFFFFF) (i32.const 0)) [1] \u003e\u003e (i32.lt_u (i32.const 0xFFFFFFFF) (i32.const 0)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e (i32.gt_s (i32.const 4) (i32.const 5)) [0] \u003e\u003e (i32.gt_s (i32.const 6) (i32.const 5)) [0, 1] \u003e\u003e (drop drop) [] \u003e\u003e (i32.gt_s (i32.const 0xFFFFFFFF) (i32.const 0)) [0] \u003e\u003e (i32.gt_u (i32.const 0xFFFFFFFF) (i32.const 0)) [0, 1] \u003e\u003e (drop drop) [] \u003e\u003e Also, there is ’less than or equal’ and ‘greater than or equal’ instructions as well,\n\u003e\u003e (i32.le_s (i32.const 4) (i32.const 5)) [1] \u003e\u003e (i32.le_s (i32.const 5) (i32.const 5)) [1, 1] \u003e\u003e (i32.le_s (i32.const 6) (i32.const 5)) [1, 1, 0] \u003e\u003e (drop drop drop) [] \u003e\u003e (i32.ge_s (i32.const 4) (i32.const 5)) [0] \u003e\u003e (i32.ge_s (i32.const 5) (i32.const 5)) [0, 1] \u003e\u003e (i32.ge_s (i32.const 6) (i32.const 5)) [0, 1, 1] \u003e\u003e (drop drop drop) [] Skipping the unsigned formats le_u and ge_u, leaving it to you to guess how it will behave!\nThere is a test operation, which is essentially a logical negation,\n\u003e\u003e (i32.const 4) [4] \u003e\u003e (i32.eqz) [0] \u003e\u003e (i32.eqz) [1] \u003e\u003e (drop) [] \u003e\u003e A few more single-argument operations,\n\u003e\u003e (i32.clz (i32.const 0x08000000)) ;; count leading zeros [4] \u003e\u003e (i32.ctz (i32.const 0x08000000)) ;; count trailing zeros [4, 27] \u003e\u003e (i32.popcnt (i32.const 0x08000001)) ;; count ones [4, 27, 2] \u003e\u003e (drop drop drop) [] \u003e\u003e The operations on i64 are exactly the same as those of i32 only difference is bit width. Just for a couple of examples,\n\u003e\u003e (i64.add (i64.const 4) (i64.const 6)) [10] \u003e\u003e (drop) [] \u003e\u003e (i64.rotl (i64.const 0x8000000000000001) (i64.const 1)) [3] \u003e\u003e (drop) [] \u003e\u003e Floating point operations In floating point, Wasm does not support ‘unsigned’ operations. Let’s start with basic arithmetic ones,\n\u003e\u003e (f32.add (f32.const 1.5) (f32.const 2.5)) [4] \u003e\u003e (f32.sub (f32.const 2.5) (f32.const 1.25)) [4, 1.25] \u003e\u003e (f32.mul (f32.const 1.5) (f32.const 2.5)) [4, 1.25, 3.75] \u003e\u003e (f32.div (f32.const 3.75) (f32.const 2.5)) [4, 1.25, 3.75, 1.5] \u003e\u003e (drop drop drop drop) [] \u003e\u003e We can do min and max in floats,\n\u003e\u003e (f32.min (f32.const 1.5) (f32.const 3.5)) [1.5] \u003e\u003e (f32.max (f32.const 1.5) (f32.const 3.5)) [1.5, 3.5] \u003e\u003e (drop drop) [] \u003e\u003e Comparison operations in floats,\n\u003e\u003e (f32.eq (f32.const 1.5) (f32.const 1.5)) [1] \u003e\u003e (f32.ne (f32.const 1.5) (f32.const 1.5)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e (f32.lt (f32.const 1.5) (f32.const 2.5)) [1] \u003e\u003e (f32.gt (f32.const 1.5) (f32.const 2.5)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e (f32.le (f32.const 1.5) (f32.const 2.5)) [1] \u003e\u003e (f32.ge (f32.const 1.5) (f32.const 2.5)) [1, 0] \u003e\u003e (drop drop) [] \u003e\u003e If we want to copy the sign of a number,\n\u003e\u003e (f32.copysign (f32.const -8.0) (f32.const 5.0)) [8] \u003e\u003e (f32.copysign (f32.const -8.0) (f32.const -5.0)) [8, -8] \u003e\u003e (drop drop) [] \u003e\u003e And some unary operations,\n\u003e\u003e (f32.abs (f32.const -3.3)) [3.3] \u003e\u003e (drop) [] \u003e\u003e (f32.neg (f32.const 3.3)) [-3.3] \u003e\u003e (drop) [] \u003e\u003e (f32.ceil (f32.const 3.3)) [4] \u003e\u003e (f32.floor (f32.const 3.3)) [4, 3] \u003e\u003e (f32.nearest (f32.const 3.3)) [4, 3, 3] \u003e\u003e (drop drop drop) [] \u003e\u003e (f32.sqrt (f32.const 2.0)) [1.4142135] \u003e\u003e Again, similar to i64, f64 operations are exactly the same as f32 only difference being in bitwidth. Leaving these as well as an exercise for you to work out.\nVariable Instructions We can define local variables and set and retrieve them. See examples below,\n\u003e\u003e (local $num i32) local ;0; num [] \u003e\u003e (local.set $num (i32.const 12)) [] \u003e\u003e (local.get $num) [12] \u003e\u003e (local.get 0) ;; Use index [12, 12] \u003e\u003e (drop drop) [] \u003e\u003e If you want to set the variable, but don’t want to drop the stack tip, then there is a shorthand local.tee\n\u003e\u003e (i32.const 13) [13] \u003e\u003e (local.tee $num) [13] \u003e\u003e (drop) [] \u003e\u003e (local.get $num) [13] \u003e\u003e (drop) [] \u003e\u003e Control flow instructions These instructions allow us to change the control flow of the execution. Let’s look at if..then..else and see how it works,\n\u003e\u003e (i32.const 4) ;; input to the block [4] \u003e\u003e (i32.const 1) ;; condition [4, 1] \u003e\u003e (if (param i32) (result i32) (then (i32.const 3) (i32.mul)) (else (i32.const 5) (i32.add)) ) [12] \u003e\u003e (drop) [] \u003e\u003e (i32.const 4) [4] \u003e\u003e (i32.const 0) ;; Try again, with else block [4, 0] \u003e\u003e (if (param i32) (result i32) (then (i32.const 3) (i32.mul)) (else (i32.const 5) (i32.add)) ) [9] In both cases, the if block takes one parameter (4 in both cases) and spits out a single value as result. Based on current tip of the stack (1 or 0), it chooses the then block or else block. In then block, it multiplies the input by 3, while in else block, it adds 5. Hence it gives 12 and 9 respectively in both these operations.\nLets look at another construct, block. Similar to if the block is bound by its params and results,\n\u003e\u003e (local $num i32) local ;0; num [] \u003e\u003e (local.set $num (i32.const 10)) [] \u003e\u003e (i32.const 5) [5] \u003e\u003e (block $b (param i32) (result i32) (local.get $num) (i32.eq (i32.const 10)) (if (then br $b)) (i32.mul (i32.const 3)) ) [5] \u003e\u003e (drop) [] \u003e\u003e (local.set $num (i32.const 2)) ;; Try again without breaking [] \u003e\u003e (i32.const 5) [5] \u003e\u003e (block $b (param i32) (result i32) (local.get $num) (i32.eq (i32.const 10)) (if (then br $b)) (i32.mul (i32.const 3)) ) [15] \u003e\u003e (drop) [] \u003e\u003e When a block hits a branch (br) statement of a block, it exits the block.\nLet’s look at loop as well for the full picture,\n\u003e\u003e (local $i i32) local ;0; i(i32.const 25) [] \u003e\u003e (local.set $i (i32.const 10)) ;; number of iterations [] \u003e\u003e (i32.const 25) [25] \u003e\u003e (loop $l (param i32) (result i32) (i32.mul (i32.const 2)) (local.get $i) (i32.sub (i32.const 1)) (local.tee $i) (if (then br $l)) ) [25600] \u003e\u003e (drop) [] This is kind of analogous block, in the sense, that the branch (br) statement inside a loop will initiate the next iteration of the loop (unlike in block where it will exit the block).\nFunctions Functions are essentially blocks but with their own context of local variables and can be called at whim!\nA sample function below,\n\u003e\u003e (func $sq (param i32) (result i32) (local.get 0) (local.get 0) (i32.mul) ) func ;0; sq \u003e\u003e (call $sq (i32.const 12)) [144] \u003e\u003e Functions with explicit return can ignore additional values on the stack apart from return values,\n\u003e\u003e (func $sq (param i32) (result i32) (i32.const 3) ;; No reason to have this here, just to prove the point. (local.get 0) (local.get 0) (return (i32.mul)) ) func ;0; sq \u003e\u003e (call $sq (i32.const 12)) [144] \u003e\u003e Conclusion That was a brief overview of some of the Wasm instructions. Please note that we have only covered what is possible in wasmrepl as of writing this post, that too is only a subset of it.\nAny feedback, please open an issue here. If this was helpful, let me know as well, maybe by ‘star’ring the Github repo. We can follow up with another post on advanced Wasm concepts if this is useful for many.\nThanks for reading!\n","wordCount":"1891","inLanguage":"en","datePublished":"2023-10-25T00:00:00Z","dateModified":"2023-10-25T00:00:00Z","author":{"@type":"Person","name":"Anoop Elias"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://anoopelias.github.io/posts/intro-to-wasm/"},"publisher":{"@type":"Organization","name":"Anoop's page","logo":{"@type":"ImageObject","url":"https://anoopelias.github.io/assets/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://anoopelias.github.io accesskey=h title="Anoop's page (Alt + H)">Anoop's page</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://anoopelias.github.io/side-projects/side-projects title="My side projects"><span>My side projects</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class=post-title>Introduction to WebAssembly</h1><div class=post-meta><span title='2023-10-25 00:00:00 +0000 UTC'>October 25, 2023</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;Anoop Elias</div></header><div class=post-content><p>I had some experience with <a href=https://clojure.org/>Clojure</a> sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the <a href=https://webassembly.github.io/spec/core/text/index.html>WebAssembly (Wasm) text format</a> - which is very much a Lisp-based format - I thought, why not?</p><p>So here I am, showing off my REPL for Wasm - <a href=https://github.com/anoopelias/wasmrepl>wasmrepl</a> - to talk about a few Wasm instructions and show how it works.</p><h2 id=caveats>Caveats<a hidden class=anchor aria-hidden=true href=#caveats>#</a></h2><p>Before we proceed further, few things to call out,</p><ul><li>This REPL is not strictly built according to Wasm spec. Some rules are relaxed to make it easy to use within a REPL prompt. For example, the prompt acts as the <em>inside</em> of a Wasm <code>func</code>, so you can do, say an <code>(i32.const 12)</code>. However, unlike the inside of a Wasm <code>func</code>, you can also define a new <code>func</code> on the prompt.</li><li>We don&rsquo;t have full coverage of all features of Wasm yet. What is covered is documented <a href=https://github.com/anoopelias/wasmrepl/blob/main/Features.md>here</a>. If you would like to see a particular feature implemented, please feel free to open an <a href=https://github.com/anoopelias/wasmrepl/issues>issue</a>. Or a PR.</li></ul><p>Now that is out of the way,</p><h2 id=how-to-install-wasmrepl>How to install <code>wasmrepl</code><a hidden class=anchor aria-hidden=true href=#how-to-install-wasmrepl>#</a></h2><p>This is built as Rust&rsquo;s cargo-based binary, so,</p><pre tabindex=0><code>$ cargo install wasmrepl
+</code></pre><p>And then,</p><pre tabindex=0><code>$ wasmrepl
+&gt;&gt; 
+</code></pre><p>To exit the prompt, use <code>CTRL-D</code>.</p><h2 id=numeric-instructions>Numeric instructions<a hidden class=anchor aria-hidden=true href=#numeric-instructions>#</a></h2><h3 id=integer-operations>Integer operations<a hidden class=anchor aria-hidden=true href=#integer-operations>#</a></h3><p>Let&rsquo;s try some simple numeric instructions,</p><pre tabindex=0><code>&gt;&gt; (i32.const 12)
+[12]
+&gt;&gt;
+</code></pre><p>WebAssembly (abbreviated Wasm) is a binary instruction format for a stack-based virtual machine [<a href=https://webassembly.org/>ref</a>]. As soon as an instruction is executed, the REPL will print the current stack. Let us insert one more,</p><pre tabindex=0><code>&gt;&gt; (i32.const 18)
+[12, 18]
+&gt;&gt;
+</code></pre><p>Now that there are two values in the stack, let us add them together,</p><pre tabindex=0><code>&gt;&gt; (i32.add)
+[30]
+&gt;&gt;
+</code></pre><p>We can use the <code>drop</code> instruction to remove value from the stack as well,</p><pre tabindex=0><code>&gt;&gt; (drop)
+[]
+&gt;&gt; 
+</code></pre><p>Let&rsquo;s do a few more instructions,</p><pre tabindex=0><code>&gt;&gt; (i32.const 15) (i32.const 12)
+[15, 12]
+&gt;&gt; (i32.sub)
+[3]
+&gt;&gt; (i32.const 15) (i32.mul)
+[45]
+&gt;&gt; (i32.const 3) (i32.div_s)
+[15]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><p>You noticed the <code>_s</code> in <code>div_s</code>! Let us talk a little bit about signed and unsigned operations,</p><p>While Wasm allows only signed values on the stack (i32, i64, f32 & f64), it still allows unsigned operations. Unsigned operations are essentially an operation assuming both the values in the stack are &lsquo;unsigned bit representations&rsquo; of the value. For example, if we insert <code>-1</code> (i32) into the stack, the unsigned operation will assume it is <code>4294967295</code> (<code>0xFFFFFFFF</code>)</p><p>To prove the difference, let us take the value <code>0x80000000</code>. If this value is considered signed, then its value will be <code>-214783648</code>. If it is unsigned, then the value will be <code>214783648</code>. A signed division and an unsigned division of the same number will give different values as below,</p><pre tabindex=0><code>&gt;&gt; (i32.div_s (i32.const 0x80000000) (i32.const 2))
+[-1073741824]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i32.div_u (i32.const 0x80000000) (i32.const 2))
+[1073741824]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><p>Again you might have noticed, the concise form. Meaning, the following two sets of instructions are <em>exactly</em> same.</p><pre tabindex=0><code>(i32.&lt;op&gt; (i32.const x) (i32.const y))
+</code></pre><pre tabindex=0><code>(i32.const x)
+(i32.const y)
+(i32.&lt;op&gt;)
+</code></pre><p>Similar to <code>div</code>, a <code>rem</code> (reminder) operation also works for both signed and unsigned numbers,</p><pre tabindex=0><code>&gt;&gt; (i32.rem_s (i32.const 10) (i32.const 3))
+[1]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i32.rem_s (i32.const 10) (i32.const -3))
+[1]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i32.rem_u (i32.const 10) (i32.const -3))
+[10]
+&gt;&gt; (drop)
+[]
+&gt;&gt; 
+</code></pre><p>Now let&rsquo;s look at bitwise operations. These will work how you would expect it to,</p><pre tabindex=0><code>&gt;&gt; (i32.and (i32.const 9) (i32.const 7))
+[1]
+&gt;&gt; (i32.or (i32.const 8) (i32.const 7))
+[1, 15]
+&gt;&gt; (i32.xor (i32.const 9) (i32.const 7))
+[1, 15, 14]
+&gt;&gt; (drop) (drop) (drop)
+[]
+&gt;&gt; 
+</code></pre><p>And the shifts, (obviously the &lsquo;right shift&rsquo; can be &lsquo;signed&rsquo; or &lsquo;unsigned&rsquo;),</p><pre tabindex=0><code>&gt;&gt; (i32.shl (i32.const 1) (i32.const 2))
+[4]
+&gt;&gt; (i32.shr_s (i32.const 2))
+[1]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i32.shr_s (i32.const -2) (i32.const 1))
+[-1]
+&gt;&gt; (i32.shr_u (i32.const -2) (i32.const 1))
+[-1, 2147483647]
+&gt;&gt; (drop) (drop)
+[]
+</code></pre><p>And rotations too,</p><pre tabindex=0><code>&gt;&gt; (i32.rotl (i32.const 0x80000001) (i32.const 1))
+[3]
+&gt;&gt; (i32.rotr (i32.const 1))
+[-2147483647]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><p>Other types of instructions are comparison instructions,</p><pre tabindex=0><code>&gt;&gt; (i32.eq (i32.const 5) (i32.const 2))
+[0]
+&gt;&gt; (i32.eq (i32.const 5) (i32.const 5))
+[0, 1]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (i32.ne (i32.const 5) (i32.const 2))
+[1]
+&gt;&gt; (i32.ne (i32.const 5) (i32.const 5))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; 
+</code></pre><p>There are &rsquo;less than&rsquo; and &lsquo;greater than&rsquo; comparisons too, these have both &lsquo;signed&rsquo; and &lsquo;unsigned&rsquo; versions available,</p><pre tabindex=0><code>&gt;&gt; (i32.lt_s (i32.const 4) (i32.const 5))
+[1]
+&gt;&gt; (i32.lt_s (i32.const 6) (i32.const 5))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (i32.lt_s (i32.const 0xFFFFFFFF) (i32.const 0))
+[1]
+&gt;&gt; (i32.lt_u (i32.const 0xFFFFFFFF) (i32.const 0))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (i32.gt_s (i32.const 4) (i32.const 5))
+[0]
+&gt;&gt; (i32.gt_s (i32.const 6) (i32.const 5))
+[0, 1]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (i32.gt_s (i32.const 0xFFFFFFFF) (i32.const 0))
+[0]
+&gt;&gt; (i32.gt_u (i32.const 0xFFFFFFFF) (i32.const 0))
+[0, 1]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; 
+</code></pre><p>Also, there is &rsquo;less than or equal&rsquo; and &lsquo;greater than or equal&rsquo; instructions as well,</p><pre tabindex=0><code>&gt;&gt; (i32.le_s (i32.const 4) (i32.const 5))
+[1]
+&gt;&gt; (i32.le_s (i32.const 5) (i32.const 5))
+[1, 1]
+&gt;&gt; (i32.le_s (i32.const 6) (i32.const 5))
+[1, 1, 0]
+&gt;&gt; (drop drop drop)
+[]
+&gt;&gt; (i32.ge_s (i32.const 4) (i32.const 5))
+[0]
+&gt;&gt; (i32.ge_s (i32.const 5) (i32.const 5))
+[0, 1]
+&gt;&gt; (i32.ge_s (i32.const 6) (i32.const 5))
+[0, 1, 1]
+&gt;&gt; (drop drop drop)
+[]
+</code></pre><p>Skipping the unsigned formats <code>le_u</code> and <code>ge_u</code>, leaving it to you to guess how it will behave!</p><p>There is a test operation, which is essentially a logical negation,</p><pre tabindex=0><code>&gt;&gt; (i32.const 4)
+[4]
+&gt;&gt; (i32.eqz)
+[0]
+&gt;&gt; (i32.eqz)
+[1]
+&gt;&gt; (drop)
+[]
+&gt;&gt; 
+</code></pre><p>A few more single-argument operations,</p><pre tabindex=0><code>&gt;&gt; (i32.clz (i32.const 0x08000000)) ;; count leading zeros
+[4]
+&gt;&gt; (i32.ctz (i32.const 0x08000000)) ;; count trailing zeros
+[4, 27]
+&gt;&gt; (i32.popcnt (i32.const 0x08000001)) ;; count ones
+[4, 27, 2]
+&gt;&gt; (drop drop drop)
+[]
+&gt;&gt;
+</code></pre><p>The operations on <code>i64</code> are exactly the same as those of <code>i32</code> only difference is bit width. Just for a couple of examples,</p><pre tabindex=0><code>&gt;&gt; (i64.add (i64.const 4) (i64.const 6))
+[10]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i64.rotl (i64.const 0x8000000000000001) (i64.const 1))
+[3]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><h3 id=floating-point-operations>Floating point operations<a hidden class=anchor aria-hidden=true href=#floating-point-operations>#</a></h3><p>In floating point, Wasm does not support &lsquo;unsigned&rsquo; operations. Let&rsquo;s start with basic arithmetic ones,</p><pre tabindex=0><code>&gt;&gt; (f32.add (f32.const 1.5) (f32.const 2.5))
+[4]
+&gt;&gt; (f32.sub (f32.const 2.5) (f32.const 1.25))
+[4, 1.25]
+&gt;&gt; (f32.mul (f32.const 1.5) (f32.const 2.5))
+[4, 1.25, 3.75]
+&gt;&gt; (f32.div (f32.const 3.75) (f32.const 2.5))
+[4, 1.25, 3.75, 1.5]
+&gt;&gt; (drop drop drop drop)
+[]
+&gt;&gt;
+</code></pre><p>We can do <code>min</code> and <code>max</code> in floats,</p><pre tabindex=0><code>&gt;&gt; (f32.min (f32.const 1.5) (f32.const 3.5))
+[1.5]
+&gt;&gt; (f32.max (f32.const 1.5) (f32.const 3.5))
+[1.5, 3.5]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; 
+</code></pre><p>Comparison operations in floats,</p><pre tabindex=0><code>&gt;&gt; (f32.eq (f32.const 1.5) (f32.const 1.5))
+[1]
+&gt;&gt; (f32.ne (f32.const 1.5) (f32.const 1.5))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (f32.lt (f32.const 1.5) (f32.const 2.5))
+[1]
+&gt;&gt; (f32.gt (f32.const 1.5) (f32.const 2.5))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; (f32.le (f32.const 1.5) (f32.const 2.5))
+[1]
+&gt;&gt; (f32.ge (f32.const 1.5) (f32.const 2.5))
+[1, 0]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt; 
+</code></pre><p>If we want to copy the sign of a number,</p><pre tabindex=0><code>&gt;&gt; (f32.copysign (f32.const -8.0) (f32.const 5.0))
+[8]
+&gt;&gt; (f32.copysign (f32.const -8.0) (f32.const -5.0))
+[8, -8]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt;
+</code></pre><p>And some unary operations,</p><pre tabindex=0><code>&gt;&gt; (f32.abs (f32.const -3.3))
+[3.3]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (f32.neg (f32.const 3.3))
+[-3.3]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (f32.ceil (f32.const 3.3))
+[4]
+&gt;&gt; (f32.floor (f32.const 3.3))
+[4, 3]
+&gt;&gt; (f32.nearest (f32.const 3.3))
+[4, 3, 3]
+&gt;&gt; (drop drop drop)
+[]
+&gt;&gt; (f32.sqrt (f32.const 2.0))
+[1.4142135]
+&gt;&gt; 
+</code></pre><p>Again, similar to <code>i64</code>, <code>f64</code> operations are exactly the same as <code>f32</code> only difference being in bitwidth. Leaving these as well as an exercise for you to work out.</p><h2 id=variable-instructions>Variable Instructions<a hidden class=anchor aria-hidden=true href=#variable-instructions>#</a></h2><p>We can define local variables and set and retrieve them. See examples below,</p><pre tabindex=0><code>&gt;&gt; (local $num i32)
+local ;0; num
+[]
+&gt;&gt; (local.set $num (i32.const 12))
+[]
+&gt;&gt; (local.get $num)
+[12]
+&gt;&gt; (local.get 0) ;; Use index
+[12, 12]
+&gt;&gt; (drop drop)
+[]
+&gt;&gt;
+</code></pre><p>If you want to set the variable, but don&rsquo;t want to drop the stack tip, then there is a shorthand <code>local.tee</code></p><pre tabindex=0><code>&gt;&gt; (i32.const 13)
+[13]
+&gt;&gt; (local.tee $num)
+[13]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (local.get $num)
+[13]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><h2 id=control-flow-instructions>Control flow instructions<a hidden class=anchor aria-hidden=true href=#control-flow-instructions>#</a></h2><p>These instructions allow us to change the control flow of the execution. Let&rsquo;s look at <code>if..then..else</code> and see how it works,</p><pre tabindex=0><code>&gt;&gt; (i32.const 4) ;; input to the block
+[4]
+&gt;&gt; (i32.const 1) ;; condition
+[4, 1]
+&gt;&gt; (if (param i32) (result i32)
+     (then (i32.const 3) (i32.mul))
+     (else (i32.const 5) (i32.add))
+)
+[12]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (i32.const 4)
+[4]
+&gt;&gt; (i32.const 0) ;; Try again, with else block
+[4, 0]
+&gt;&gt; (if (param i32) (result i32)
+     (then (i32.const 3) (i32.mul))
+     (else (i32.const 5) (i32.add))
+)
+[9]
+</code></pre><p>In both cases, the <code>if</code> block takes one parameter (<code>4</code> in both cases) and spits out a single value as result. Based on current tip of the stack (<code>1</code> or <code>0</code>), it chooses the <code>then</code> block or <code>else</code> block. In <code>then</code> block, it multiplies the input by <code>3</code>, while in <code>else</code> block, it adds <code>5</code>. Hence it gives <code>12</code> and <code>9</code> respectively in both these operations.</p><p>Lets look at another construct, <code>block</code>. Similar to <code>if</code> the block is bound by its <code>param</code>s and <code>result</code>s,</p><pre tabindex=0><code>&gt;&gt; (local $num i32)
+local ;0; num
+[]
+&gt;&gt; (local.set $num (i32.const 10))
+[]
+&gt;&gt; (i32.const 5)
+[5]
+&gt;&gt; (block $b
+    (param i32) (result i32)
+    (local.get $num)
+    (i32.eq (i32.const 10))
+    (if (then br $b))
+    (i32.mul (i32.const 3))
+)
+[5]
+&gt;&gt; (drop)
+[]
+&gt;&gt; (local.set $num (i32.const 2)) ;; Try again without breaking
+[]
+&gt;&gt; (i32.const 5)
+[5]
+&gt;&gt; (block $b
+    (param i32) (result i32)
+    (local.get $num)
+    (i32.eq (i32.const 10))
+    (if (then br $b))
+    (i32.mul (i32.const 3))
+)
+[15]
+&gt;&gt; (drop)
+[]
+&gt;&gt;
+</code></pre><p>When a block hits a branch (<code>br</code>) statement of a <code>block</code>, it exits the block.</p><p>Let&rsquo;s look at <code>loop</code> as well for the full picture,</p><pre tabindex=0><code>&gt;&gt; (local $i i32)
+local ;0; i(i32.const 25)
+[]
+&gt;&gt; (local.set $i (i32.const 10)) ;; number of iterations
+[]
+&gt;&gt; (i32.const 25)
+[25]
+&gt;&gt; (loop $l
+    (param i32) (result i32)
+
+    (i32.mul (i32.const 2))
+
+    (local.get $i)
+    (i32.sub (i32.const 1))
+    (local.tee $i)
+    (if (then br $l))
+)
+[25600]
+&gt;&gt; (drop)
+[]
+</code></pre><p>This is kind of analogous <code>block</code>, in the sense, that the branch (<code>br</code>) statement inside a loop will initiate the next iteration of the <code>loop</code> (unlike in <code>block</code> where it will exit the block).</p><h2 id=functions>Functions<a hidden class=anchor aria-hidden=true href=#functions>#</a></h2><p>Functions are essentially blocks but with their own context of local variables and can be <code>call</code>ed at whim!</p><p>A sample function below,</p><pre tabindex=0><code>&gt;&gt; (func $sq
+    (param i32) (result i32)
+
+    (local.get 0)
+    (local.get 0)
+    (i32.mul)
+)
+func ;0; sq
+&gt;&gt; (call $sq (i32.const 12))
+[144]
+&gt;&gt;
+</code></pre><p>Functions with explicit return can ignore additional values on the stack apart from return values,</p><pre tabindex=0><code>&gt;&gt; (func $sq
+    (param i32) (result i32)
+
+    (i32.const 3) ;; No reason to have this here, just to prove the point.
+
+    (local.get 0)
+    (local.get 0)
+    (return (i32.mul))
+)
+func ;0; sq
+&gt;&gt; (call $sq (i32.const 12))
+[144]
+&gt;&gt;
+</code></pre><h2 id=conclusion>Conclusion<a hidden class=anchor aria-hidden=true href=#conclusion>#</a></h2><p>That was a brief overview of some of the Wasm instructions. Please note that we have only covered what is possible in <code>wasmrepl</code> as of writing this post, that too is only a subset of it.</p><p>Any feedback, please open an issue <a href=https://github.com/anoopelias/wasmrepl/issues>here</a>. If this was helpful, let me know as well, maybe by &lsquo;star&rsquo;ring the Github repo. We can follow up with another post on advanced Wasm concepts if this is useful for many.</p><p>Thanks for reading!</p></div><footer class=post-footer><ul class=post-tags></ul></footer></article></main><footer class=footer><span>&copy; 2023 <a href=https://anoopelias.github.io>Anoop's page</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script></body></html>
