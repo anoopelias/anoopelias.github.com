@@ -8,7 +8,8 @@ params:
         Title: Anoop Elias
         Content: |
           Application Developer at /thoughtworks,\
-          Lives in Bangalore, India
+          Lives in Bangalore, India \
+          anoopelias@gmail.com
     socialIcons:
         - name: "Github"
           url: "https://github.com/anoopelias/"
@@ -18,7 +19,6 @@ params:
           url: "https://stackoverflow.com/users/1328888/anoopelias"
         - name: "email"
           url: "mailto:anoopelias@gmail.com"
-          
     assets:
         favicon: "/assets/favicon.ico"
         favicon16x16: "/assets/favicon-16x16.png"
