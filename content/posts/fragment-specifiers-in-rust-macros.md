@@ -10,7 +10,7 @@ Rust macros seemed like an enigma when I first saw it, but once I started unders
 
 "Fragment specifiers" are what you see as the "type" of an argument that you might see in the invocation of the macro. The most common being `expr`. Like below,
 
-```
+```rust
 macro_rules! add_two_numbers {
     ($num1:expr, $num2:expr) => {
         $num1 + $num2
@@ -29,7 +29,7 @@ Before we delve into all the other fragment specifiers, let us quickly see what 
 
 Rust macros are pre-processors. Essentially it allows us to add/change code at compile time. This process is called "macro expansion". If we are to get the rust compiler to expand the above code, it will look like,
 
-```
+```rust
 #![feature(prelude_import)]
 #[prelude_import]
 use std::prelude::rust_2021::*;
@@ -55,7 +55,7 @@ As you thought, the example code I gave above (`add_two_numbers`) - we could ach
 
 - Variable number of args. Rust functions do not support this feature, so instead, we need to use a macro. The most common example is the `println!` macro.
 
-```
+```rust
 let name = "foo";
 println!("Hello {}", name);
 ```
@@ -73,7 +73,7 @@ I am sure there _are_ more. If you happen to know, please let me know!
 
 Expression example
 
-```
+```rust
 macro_rules! is_even {
     ($num:expr) => (
         match $num % 2 {
@@ -92,7 +92,7 @@ fn main() {
 
 An example of an identifier using a macro,
 
-```
+```rust
 macro_rules! create_function {
     ($func_name:ident) => {
         fn $func_name() {
@@ -116,7 +116,7 @@ The values can be function names, variable names, struct names, etc. See many mo
 
 An item is a root-level object like modules, structs, traits, functions, impl blocks, use declarations, etc. Let us look at an example with `struct`,
 
-```
+```rust
 macro_rules! customize {
     ($struct:item) => {
         #[derive(Debug)]
@@ -141,7 +141,7 @@ fn main() {
 
 Statements are different from Expressions in the sense that they will produce a side effect, do not necessarily have to return anything, or rather the returned value is ignored. An example of a macro using Statement below,
 
-```
+```rust
 macro_rules! repeat_statement {
     ($stmt:stmt, $count:expr) => {
         for _ in 0..$count {
@@ -159,7 +159,7 @@ fn main() {
 
 Blocks are lines of code wrapped in curly braces (`{}`). At the same time, they are expressions as well. Like below,
 
-```
+```rust
 use rand::Rng;
 
 macro_rules! rand_block {
@@ -193,7 +193,7 @@ fn main() {
 
 In this example, we can pass a particular type to the macro, and generate code based on the type, like,
 
-```
+```rust
 macro_rules! create_struct {
     ($struct_name:ident, $field_type:ty) => {
         struct $struct_name {
@@ -215,7 +215,7 @@ fn main() {
 
 There could be other use cases, but I found "Path" is particularly useful when you want to pass an enum _value_ to the macro. See below,
 
-```
+```rust
 enum Value {
     I32(i32),
     I64(i64),
@@ -244,7 +244,7 @@ fn main() {
 
 With this, we can pass a pattern to a macro which can be used as an arm of a match expression. For example,
 
-```
+```rust
 macro_rules! assert_match {
     ($exp:expr, $pattern:pat) => {
         match $exp {
@@ -264,7 +264,7 @@ fn main() {
 
 When `:pat` was introduced first, it didn't match against `|` so you can have a pattern separator like `$pattern1 | $pattern2`. However, a breaking change was introduced in Rust 2021 to allow `:pat` to match the pipe inside it. Thereby not allowing a pipe separator after `:pat`. So, to be able to use a pipe as a macro argument separator, we need to use `:pat-param`. See [this](https://doc.rust-lang.org/edition-guide/rust-2021/or-patterns-macro-rules.html) for more details. Sample code below,
 
-```
+```rust
 macro_rules! assert_match {
     ($exp:expr, $pattern1:pat_param | $pattern2:pat) => {
         match $exp {
@@ -289,7 +289,7 @@ fn main() {
 
 Meta specifier is used to send `#[xxx]` type attributes to the macro. Let us extend our `create_struct` to support attributes as well,
 
-```
+```rust
 macro_rules! create_struct {
     ($struct_name:ident, $field_type:ty) => {
         struct $struct_name {
@@ -318,7 +318,7 @@ fn main() {
 
 We can use a Literal specifier if we want to ensure that the macro invocation uses a literal instead of an expression or variable.
 
-```
+```rust
 struct Config {
     host: &'static str,
 }
@@ -335,7 +335,7 @@ fn main() {
 ```
 
 Compilation will fail even if we use a variable that holds a string literal.
-```
+```rust
 fn main() {
     let host = "127.0.0.1";
 
@@ -348,7 +348,7 @@ fn main() {
 
 This specifier can be used to pass a visibility modifier to the macro. Like `pub` or `pub(crate)` or even nothing! Let us use this to extend our `create_struct!` macro,
 
-```
+```rust
 macro_rules! create_struct {
     ($access:vis $struct_name:ident, $field_type:ty) => {
         $access struct $struct_name {
@@ -370,7 +370,7 @@ fn main() {
 
 A lifetime fragment specifier is useful when you want to pass an existing lifetime into a macro. For example, you want to create an `impl` function on a type that has a lifetime parameter. Like below,
 
-```
+```rust
 macro_rules! create_fn_new {
     ($lt:lifetime, $field_type:ty) => {
         fn new(num: &$lt $field_type) -> Self {
@@ -402,7 +402,7 @@ With flexibility comes responsibility, so be diligent in using this specifier. A
 
 One particular example where I found Token Tree is useful is,
 
-```
+```rust
 macro_rules! my_println {
     ($($arg:tt)*) => {
         use std::io::Write;
