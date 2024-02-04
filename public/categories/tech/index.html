@@ -107,8 +107,8 @@
         </div>
         <ul id="menu">
             <li>
-                <a href="https://anoopelias.github.io/side-projects/side-projects" title="side projects">
-                    <span>side projects</span>
+                <a href="https://anoopelias.github.io/side-projects/side-projects" title="My side projects">
+                    <span>My side projects</span>
                 </a>
             </li>
         </ul>
@@ -120,6 +120,72 @@
     tech
   </h1>
 </header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>Fragment specifiers in Rust Macros
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it’s not all that bad!
+“Fragment specifiers” are what you see as the “type” of an argument that you might see in the invocation of the macro. The most common being expr. Like below,
+macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =&gt; { $num1 &#43; $num2 }; } fn main() { let _result = add_two_numbers!...</p>
+  </div>
+  <footer class="entry-footer"><span title='2024-02-04 00:00:00 +0000 UTC'>February 4, 2024</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;Anoop Elias</footer>
+  <a class="entry-link" aria-label="post link to Fragment specifiers in Rust Macros" href="https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>Introduction to WebAssembly
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?
+So here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works....</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-10-25 00:00:00 +0000 UTC'>October 25, 2023</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;Anoop Elias</footer>
+  <a class="entry-link" aria-label="post link to Introduction to WebAssembly" href="https://anoopelias.github.io/posts/intro-to-wasm/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>LLVM Compile Stages
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>While working on the previous blog post, I went on a tangent and tried to solve it by looking a bit more deeply into LLVM architecture. While that tangent was not fruitful for that post, I thought I would write those findings in another!
+LLVM is a collection of software tools that can parse, optimize, and link several programming languages into several targets.
+The main programming languages that use LLVM are,...</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-08-27 00:00:00 +0000 UTC'>August 27, 2023</span>&nbsp;·&nbsp;4 min&nbsp;·&nbsp;Anoop Elias</footer>
+  <a class="entry-link" aria-label="post link to LLVM Compile Stages" href="https://anoopelias.github.io/posts/llvm-compile-stages/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>WASM Micro Runtime with Rust
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Traditionally, microcontrollers are known to be able to run only C code. Firmware developers will usually have an Eclipse-based IDE as well as a custom compiler toolchain to compile the code against the target. This has been changing a lot. For example, MicroPython has become popular recently. RaspberryPi Pico, ExpressIf’s ESP32 are some microcontrollers that have fairly good support for MicroPython. See antirez’s talk32 project, which attempts to improve the MicroPython tooling and developer workflow for ESP32....</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-07-30 00:00:00 +0000 UTC'>July 30, 2023</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;Anoop Elias</footer>
+  <a class="entry-link" aria-label="post link to WASM Micro Runtime with Rust" href="https://anoopelias.github.io/posts/wasm-micro-runtime-with-rust/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2>Event Loop in Go
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>“Single Threaded Even Loop” or simply “Event Loop” is a fairly well-known concept in the programming world. This concept was popularized early on by GUI frameworks and JavaScript engines running in browsers and later by Node.js as well. The important advantage of this construct is we can stop worrying about “thread safety” altogether. Thread safety comes for free because all you have is only one thread anyway.
+Another great example of usage of a Single Threaded Event Loop is Redis....</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-03-05 00:00:00 +0000 UTC'>March 5, 2023</span>&nbsp;·&nbsp;10 min&nbsp;·&nbsp;Anoop Elias</footer>
+  <a class="entry-link" aria-label="post link to Event Loop in Go" href="https://anoopelias.github.io/posts/event-loop-in-go/"></a>
+</article>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
@@ -142,7 +208,7 @@ Pi Setup The Pi already had an SD card....</p>
     </h2>
   </header>
   <div class="entry-content">
-    <p> Boids Simulation Tranquility Calendar Cryptopals solutions in Rust </p>
+    <p> REPL for Wasm - wasmrepl WASM Micro Runtime (WAMR) over ESP32 Redis implementation in Go Solutions to Advent of Code Tranquility Calendar Boids Simulation Cryptopals solutions in Rust </p>
   </div>
   <footer class="entry-footer">1 min</footer>
   <a class="entry-link" aria-label="post link to Side Projects" href="https://anoopelias.github.io/side-projects/side-projects/"></a>
@@ -150,7 +216,7 @@ Pi Setup The Pi already had an SD card....</p>
     </main>
     
 <footer class="footer">
-    <span>&copy; 2023 <a href="https://anoopelias.github.io">Anoop&#39;s page</a></span>
+    <span>&copy; 2024 <a href="https://anoopelias.github.io">Anoop&#39;s page</a></span>
     <span>
         Powered by
         <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &

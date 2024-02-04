@@ -12,7 +12,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://anoopelias.github.io/side-projects/side-projects/</guid>
-      <description> Boids Simulation Tranquility Calendar Cryptopals solutions in Rust </description>
+      <description> REPL for Wasm - wasmrepl WASM Micro Runtime (WAMR) over ESP32 Redis implementation in Go Solutions to Advent of Code Tranquility Calendar Boids Simulation Cryptopals solutions in Rust </description>
     </item>
     
   </channel>

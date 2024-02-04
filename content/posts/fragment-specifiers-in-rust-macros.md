@@ -3,7 +3,7 @@ layout: post
 title: "Fragment specifiers in Rust Macros"
 categories: tech
 author: Anoop Elias
-date: "2024-02-05"
+date: "2024-02-04"
 ---
 
 Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it's not all that bad!

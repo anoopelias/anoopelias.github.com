@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Fragment specifiers in Rust Macros | Anoop&#39;s page</title>
+<meta name="keywords" content="">
+<meta name="description" content="Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it&rsquo;s not all that bad!
+&ldquo;Fragment specifiers&rdquo; are what you see as the &ldquo;type&rdquo; of an argument that you might see in the invocation of the macro. The most common being expr. Like below,
+macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =&gt; { $num1 &#43; $num2 }; } fn main() { let _result = add_two_numbers!">
+<meta name="author" content="Anoop Elias">
+<link rel="canonical" href="https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.6a98292fb8fa8cf0f3ba4042d4b75515c04267550f3ad49ff6271b5af9562443.css" integrity="sha256-apgpL7j6jPDzukBC1LdVFcBCZ1UPOtSf9icbWvlWJEM=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://anoopelias.github.io/assets/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://anoopelias.github.io/assets/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://anoopelias.github.io/assets/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://anoopelias.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://anoopelias.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Fragment specifiers in Rust Macros" />
+<meta property="og:description" content="Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it&rsquo;s not all that bad!
+&ldquo;Fragment specifiers&rdquo; are what you see as the &ldquo;type&rdquo; of an argument that you might see in the invocation of the macro. The most common being expr. Like below,
+macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =&gt; { $num1 &#43; $num2 }; } fn main() { let _result = add_two_numbers!" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-02-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-02-04T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Fragment specifiers in Rust Macros"/>
+<meta name="twitter:description" content="Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it&rsquo;s not all that bad!
+&ldquo;Fragment specifiers&rdquo; are what you see as the &ldquo;type&rdquo; of an argument that you might see in the invocation of the macro. The most common being expr. Like below,
+macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =&gt; { $num1 &#43; $num2 }; } fn main() { let _result = add_two_numbers!"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Posts",
+      "item": "https://anoopelias.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Fragment specifiers in Rust Macros",
+      "item": "https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fragment specifiers in Rust Macros",
+  "name": "Fragment specifiers in Rust Macros",
+  "description": "Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it\u0026rsquo;s not all that bad!\n\u0026ldquo;Fragment specifiers\u0026rdquo; are what you see as the \u0026ldquo;type\u0026rdquo; of an argument that you might see in the invocation of the macro. The most common being expr. Like below,\nmacro_rules! add_two_numbers { ($num1:expr, $num2:expr) =\u0026gt; { $num1 + $num2 }; } fn main() { let _result = add_two_numbers!",
+  "keywords": [
+    
+  ],
+  "articleBody": "Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it’s not all that bad!\n“Fragment specifiers” are what you see as the “type” of an argument that you might see in the invocation of the macro. The most common being expr. Like below,\nmacro_rules! add_two_numbers { ($num1:expr, $num2:expr) =\u003e { $num1 + $num2 }; } fn main() { let _result = add_two_numbers!(1, 2); } Note that the call ends with ! like add_two_numbers! which tells us this is a macro invocation.\nBefore we delve into all the other fragment specifiers, let us quickly see what is a Rust macro and when to use it.\nWhat is a Rust macro? Rust macros are pre-processors. Essentially it allows us to add/change code at compile time. This process is called “macro expansion”. If we are to get the rust compiler to expand the above code, it will look like,\n#![feature(prelude_import)] #[prelude_import] use std::prelude::rust_2021::*; #[macro_use] extern crate std; macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =\u003e { $num1 + $num2 }; } fn main() { let _result = 1 + 2; } (Please ignore the first few lines, it is something that the Rust compiler adds)\nThe concept of Rust macro is similar to that of one in C, in the sense that it is a pre-processor, however they both differ fundamentally in implementation.\nMacro expansion in C happens on tokens, while in Rust, it happens on the AST! This makes the rust implementation a tad bit harder to understand and use, however that makes it more powerful! We’ll see,\nWhen to use Rust macro? As you thought, the example code I gave above (add_two_numbers) - we could achieve the same using a function as well. Personally, I have seen at least two cases where Rust macro might be useful over a function,\nVariable number of args. Rust functions do not support this feature, so instead, we need to use a macro. The most common example is the println! macro. let name = \"foo\"; println!(\"Hello {}\", name); When we want to have the same implementation for multiple types. For example, see this. This way we can avoid creating enums/traits, thereby simplifying it for the client, all the while not duplicating the code as well. I am sure there are more. If you happen to know, please let me know!\nFragment Specifiers “Fragment specifiers” is the technical name used for the type annotation of argument. At times I have seen Fragment Specifiers also referred to as “Token Types”. Let us go through one by one and see examples of each of them,\nProtip: To see how these macros expand, you can copy and paste this code into Rust Playground and choose “TOOLS \u003e Expand macros”.\nexpr Expression example\nmacro_rules! is_even { ($num:expr) =\u003e ( match $num % 2 { 0 =\u003e true, 1 =\u003e false, _ =\u003e unreachable!() } ); } fn main() { let _result = is_even!(20 + 5); } ident An example of an identifier using a macro,\nmacro_rules! create_function { ($func_name:ident) =\u003e { fn $func_name() { println!(\"Hello from function: {}\", stringify!($func_name)); } }; } fn main() { create_function!(greet_world); create_function!(say_hello); greet_world(); say_hello(); } The values can be function names, variable names, struct names, etc. See many more examples in action.\nitem An item is a root-level object like modules, structs, traits, functions, impl blocks, use declarations, etc. Let us look at an example with struct,\nmacro_rules! customize { ($struct:item) =\u003e { #[derive(Debug)] $struct }; } customize! { struct Coord { x: i32, y: i32, } } fn main() { let coord = Coord { x: 3, y: 6 }; println!(\"coord: {:?}\", coord); } stmt Statements are different from Expressions in the sense that they will produce a side effect, do not necessarily have to return anything, or rather the returned value is ignored. An example of a macro using Statement below,\nmacro_rules! repeat_statement { ($stmt:stmt, $count:expr) =\u003e { for _ in 0..$count { $stmt } }; } fn main() { repeat_statement!(println!(\"This statement is repeated!\"), 3); } block Blocks are lines of code wrapped in curly braces ({}). At the same time, they are expressions as well. Like below,\nuse rand::Rng; macro_rules! rand_block { ($block1:block, $block2:block) =\u003e { { let n: u8 = rand::thread_rng().gen(); if n % 2 == 0 $block1 else $block2 } }; } fn main() { let (num1, num2): (i32, i32) = (9, 10); let result = rand_block!( { println!(\"Executing first block\"); num1 }, { println!(\"Executing second block\"); num2 } ); println!(\"Result: {}\", result); } ty In this example, we can pass a particular type to the macro, and generate code based on the type, like,\nmacro_rules! create_struct { ($struct_name:ident, $field_type:ty) =\u003e { struct $struct_name { value: $field_type, } }; } fn main() { create_struct!(IntegerStruct, i32); create_struct!(FloatStruct, f64); let _int_instance = IntegerStruct { value: 10 }; let _float_instance = FloatStruct { value: 3.14 }; } path There could be other use cases, but I found “Path” is particularly useful when you want to pass an enum value to the macro. See below,\nenum Value { I32(i32), I64(i64), } macro_rules! map_num_types { ($type:ty, $enum:path) =\u003e { impl From\u003c$type\u003e for Value { fn from(n: $type) -\u003e Self { $enum(n) } } }; } map_num_types!(i32, Value::I32); map_num_types!(i64, Value::I64); fn main() { let _i32_value: Value = 2.into(); let _i64_value: Value = 3.into(); } pat With this, we can pass a pattern to a macro which can be used as an arm of a match expression. For example,\nmacro_rules! assert_match { ($exp:expr, $pattern:pat) =\u003e { match $exp { $pattern =\u003e {} _ =\u003e panic!(\"Failed match\"), } } } fn main() { let value = 5; assert_match!(value, 3 | 5 | 7); } pat-param When :pat was introduced first, it didn’t match against | so you can have a pattern separator like $pattern1 | $pattern2. However, a breaking change was introduced in Rust 2021 to allow :pat to match the pipe inside it. Thereby not allowing a pipe separator after :pat. So, to be able to use a pipe as a macro argument separator, we need to use :pat-param. See this for more details. Sample code below,\nmacro_rules! assert_match { ($exp:expr, $pattern1:pat_param | $pattern2:pat) =\u003e { match $exp { $pattern1 =\u003e { println!(\"Pattern 1 match\"); } $pattern2 =\u003e { println!(\"Pattern 2 match\"); } _ =\u003e panic!(\"Failed match\"), } } } fn main() { let value = 2; assert_match!(value, 1 | 2); } meta Meta specifier is used to send #[xxx] type attributes to the macro. Let us extend our create_struct to support attributes as well,\nmacro_rules! create_struct { ($struct_name:ident, $field_type:ty) =\u003e { struct $struct_name { value: $field_type, } }; ($struct_name:ident, $field_type:ty, $($meta:meta),*) =\u003e { $(#[$meta])* struct $struct_name { value: $field_type, } }; } fn main() { create_struct!(IntegerStruct, i32); create_struct!(FloatStruct, f64, derive(Debug)); let _int_instance = IntegerStruct { value: 10 }; let _float_instance = FloatStruct { value: 3.14 }; } literal We can use a Literal specifier if we want to ensure that the macro invocation uses a literal instead of an expression or variable.\nstruct Config { host: \u0026'static str, } macro_rules! create_config { ($host:literal) =\u003e { Config { host: $host } }; } fn main() { let config = create_config![\"127.0.0.1\"]; } Compilation will fail even if we use a variable that holds a string literal.\nfn main() { let host = \"127.0.0.1\"; // Compilation Fail : no rules expected this token in macro call let config = create_config![host]; } vis This specifier can be used to pass a visibility modifier to the macro. Like pub or pub(crate) or even nothing! Let us use this to extend our create_struct! macro,\nmacro_rules! create_struct { ($access:vis $struct_name:ident, $field_type:ty) =\u003e { $access struct $struct_name { value: $field_type, } }; } fn main() { create_struct!(pub IntegerStruct, i32); create_struct!(FloatStruct, f64); let _int_instance = IntegerStruct { value: 10 }; let _float_instance = FloatStruct { value: 3.14 }; } lifetime A lifetime fragment specifier is useful when you want to pass an existing lifetime into a macro. For example, you want to create an impl function on a type that has a lifetime parameter. Like below,\nmacro_rules! create_fn_new { ($lt:lifetime, $field_type:ty) =\u003e { fn new(num: \u0026$lt $field_type) -\u003e Self { Self { value: num } } }; } struct IntegerStruct\u003c'a\u003e { value: \u0026'a i32 } impl\u003c'a\u003e IntegerStruct\u003c'a\u003e { create_fn_new! {'a, i32} } fn main() { let _instance = IntegerStruct::new(\u002610); } tt Also called a Token Tree, this is the most flexible of all fragment specifiers. A token tree is anything that wraps in a (), {}, or []. Or it can be a single token. The catch is then we cannot use this macro argument where some of the fragment specifier type rules are applicable. It is still possible to use Token Tree for many of the examples we mentioned above, but for example, we cannot use tt type argument as the arm of a match, we definitely need pat for that.\nWith flexibility comes responsibility, so be diligent in using this specifier. Avoid it as much as possible to catch your errors early and in the right places.\nOne particular example where I found Token Tree is useful is,\nmacro_rules! my_println { ($($arg:tt)*) =\u003e { use std::io::Write; std::io::stdout().write(format!($($arg)*).as_bytes()); }; } fn main() { my_println!(\"{} {}\", \"foo\", \"bar\"); } Conclusion While we talked about the arguments to a macro, we didn’t discuss much about the type of return values. In general, the returns of a macro should be compatible with the exact position where the macro is invoked. We did touch a few of those, for example in expr example, the macro returns an Expression as well, and in ident example, the macro returns an Item. Maybe we can write another blog covering this.\nSo that was a summary of all the Fragment Specifiers that Rust supports as of today. There were a few macro features like Internal Rules which we left out intentionally, but if you are interested I strongly recommend The Little Book of Rust Macros.\nAll the code in this blog was tested using Rust Playground. If you feel something is not right, please feel free to drop an email.\nThanks for reading!\n",
+  "wordCount" : "1679",
+  "inLanguage": "en",
+  "datePublished": "2024-02-04T00:00:00Z",
+  "dateModified": "2024-02-04T00:00:00Z",
+  "author":{
+    "@type": "Person",
+    "name": "Anoop Elias"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Anoop's page",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://anoopelias.github.io/assets/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://anoopelias.github.io" accesskey="h" title="Anoop&#39;s page (Alt + H)">Anoop&#39;s page</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://anoopelias.github.io/side-projects/side-projects" title="My side projects">
+                    <span>My side projects</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title">
+      Fragment specifiers in Rust Macros
+    </h1>
+    <div class="post-meta"><span title='2024-02-04 00:00:00 +0000 UTC'>February 4, 2024</span>&nbsp;·&nbsp;8 min&nbsp;·&nbsp;Anoop Elias
+
+</div>
+  </header> 
+  <div class="post-content"><p>Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it&rsquo;s not all that bad!</p>
+<p>&ldquo;Fragment specifiers&rdquo; are what you see as the &ldquo;type&rdquo; of an argument that you might see in the invocation of the macro. The most common being <code>expr</code>. Like below,</p>
+<pre tabindex="0"><code>macro_rules! add_two_numbers {
+    ($num1:expr, $num2:expr) =&gt; {
+        $num1 + $num2
+    };
+}
+fn main() {
+    let _result = add_two_numbers!(1, 2);
+}
+</code></pre><p>Note that the call ends with <code>!</code> like <code>add_two_numbers!</code> which tells us this is a macro invocation.</p>
+<p>Before we delve into all the other fragment specifiers, let us quickly see what is a Rust macro and when to use it.</p>
+<h2 id="what-is-a-rust-macro">What is a Rust macro?<a hidden class="anchor" aria-hidden="true" href="#what-is-a-rust-macro">#</a></h2>
+<p>Rust macros are pre-processors. Essentially it allows us to add/change code at compile time. This process is called &ldquo;macro expansion&rdquo;. If we are to get the rust compiler to expand the above code, it will look like,</p>
+<pre tabindex="0"><code>#![feature(prelude_import)]
+#[prelude_import]
+use std::prelude::rust_2021::*;
+#[macro_use]
+extern crate std;
+macro_rules! add_two_numbers {
+    ($num1:expr, $num2:expr) =&gt; { $num1 + $num2 };
+}
+fn main() { let _result = 1 + 2; }
+</code></pre><p>(Please ignore the first few lines, it is something that the Rust compiler adds)</p>
+<p>The concept of Rust macro is similar to that of one in C, in the sense that it is a pre-processor, however they both differ fundamentally in implementation.</p>
+<p><img loading="lazy" src="/posts/macro-expansion.png" alt=""  />
+</p>
+<p>Macro expansion in C happens on tokens, while in Rust, it happens on the AST! This makes the rust implementation a tad bit harder to understand and use, however that makes it more powerful! We&rsquo;ll see,</p>
+<h2 id="when-to-use-rust-macro">When to use Rust macro?<a hidden class="anchor" aria-hidden="true" href="#when-to-use-rust-macro">#</a></h2>
+<p>As you thought, the example code I gave above (<code>add_two_numbers</code>) - we could achieve the same using a function as well. Personally, I have seen at least two cases where Rust macro might be useful over a function,</p>
+<ul>
+<li>Variable number of args. Rust functions do not support this feature, so instead, we need to use a macro. The most common example is the <code>println!</code> macro.</li>
+</ul>
+<pre tabindex="0"><code>let name = &#34;foo&#34;;
+println!(&#34;Hello {}&#34;, name);
+</code></pre><ul>
+<li>When we want to have the same implementation for multiple types. For example, see <a href="https://github.com/anoopelias/wasmrepl/blob/1d77fe6b175db1bd89f5011e1be424c526c97952/src/value.rs#L55">this</a>. This way we can avoid creating enums/traits, thereby simplifying it for the client, all the while not duplicating the code as well.</li>
+</ul>
+<p>I am sure there <em>are</em> more. If you happen to know, please let me know!</p>
+<h2 id="fragment-specifiers">Fragment Specifiers<a hidden class="anchor" aria-hidden="true" href="#fragment-specifiers">#</a></h2>
+<p>&ldquo;Fragment specifiers&rdquo; is the technical name used for the type annotation of argument. At times I have seen Fragment Specifiers also referred to as &ldquo;Token Types&rdquo;. Let us go through one by one and see examples of each of them,</p>
+<p><strong>Protip:</strong> To see how these macros expand, you can copy and paste this code into <a href="https://play.rust-lang.org/">Rust Playground</a> and choose &ldquo;TOOLS &gt; Expand macros&rdquo;.</p>
+<h3 id="expr"><code>expr</code><a hidden class="anchor" aria-hidden="true" href="#expr">#</a></h3>
+<p>Expression example</p>
+<pre tabindex="0"><code>macro_rules! is_even {
+    ($num:expr) =&gt; (
+        match $num % 2 {
+            0 =&gt; true,
+            1 =&gt; false,
+            _ =&gt; unreachable!()
+        }
+    );
+}
+fn main() {
+    let _result = is_even!(20 + 5);
+}
+</code></pre><h3 id="ident"><code>ident</code><a hidden class="anchor" aria-hidden="true" href="#ident">#</a></h3>
+<p>An example of an identifier using a macro,</p>
+<pre tabindex="0"><code>macro_rules! create_function {
+    ($func_name:ident) =&gt; {
+        fn $func_name() {
+            println!(&#34;Hello from function: {}&#34;, stringify!($func_name));
+        }
+    };
+}
+
+fn main() {
+    create_function!(greet_world);
+    create_function!(say_hello);
+
+    greet_world();
+    say_hello();
+}
+</code></pre><p>The values can be function names, variable names, struct names, etc. See many more <a href="https://github.com/anoopelias/wasmrepl/blob/1d77fe6b175db1bd89f5011e1be424c526c97952/src/handler.rs#L268">examples</a> in action.</p>
+<h3 id="item"><code>item</code><a hidden class="anchor" aria-hidden="true" href="#item">#</a></h3>
+<p>An item is a root-level object like modules, structs, traits, functions, impl blocks, use declarations, etc. Let us look at an example with <code>struct</code>,</p>
+<pre tabindex="0"><code>macro_rules! customize {
+    ($struct:item) =&gt; {
+        #[derive(Debug)]
+        $struct
+    };
+}
+
+customize! {
+    struct Coord {
+        x: i32,
+        y: i32,
+    }
+}
+
+fn main() {
+    let coord = Coord { x: 3, y: 6 };
+    println!(&#34;coord: {:?}&#34;, coord);
+}
+</code></pre><h3 id="stmt"><code>stmt</code><a hidden class="anchor" aria-hidden="true" href="#stmt">#</a></h3>
+<p>Statements are different from Expressions in the sense that they will produce a side effect, do not necessarily have to return anything, or rather the returned value is ignored. An example of a macro using Statement below,</p>
+<pre tabindex="0"><code>macro_rules! repeat_statement {
+    ($stmt:stmt, $count:expr) =&gt; {
+        for _ in 0..$count {
+            $stmt
+        }
+    };
+}
+
+fn main() {
+    repeat_statement!(println!(&#34;This statement is repeated!&#34;), 3);
+}
+</code></pre><h3 id="block"><code>block</code><a hidden class="anchor" aria-hidden="true" href="#block">#</a></h3>
+<p>Blocks are lines of code wrapped in curly braces (<code>{}</code>). At the same time, they are expressions as well. Like below,</p>
+<pre tabindex="0"><code>use rand::Rng;
+
+macro_rules! rand_block {
+    ($block1:block, $block2:block) =&gt; {
+        {
+            let n: u8 = rand::thread_rng().gen();
+            if n % 2 == 0 $block1
+            else $block2
+        }
+    };
+}
+
+fn main() {
+    let (num1, num2): (i32, i32) = (9, 10);
+    let result = rand_block!(
+        {
+            println!(&#34;Executing first block&#34;);
+            num1
+        },
+        {
+            println!(&#34;Executing second block&#34;);
+            num2
+        }
+    );
+
+    println!(&#34;Result: {}&#34;, result);
+}
+</code></pre><h3 id="ty"><code>ty</code><a hidden class="anchor" aria-hidden="true" href="#ty">#</a></h3>
+<p>In this example, we can pass a particular type to the macro, and generate code based on the type, like,</p>
+<pre tabindex="0"><code>macro_rules! create_struct {
+    ($struct_name:ident, $field_type:ty) =&gt; {
+        struct $struct_name {
+            value: $field_type,
+        }
+    };
+}
+
+fn main() {
+    create_struct!(IntegerStruct, i32);
+    create_struct!(FloatStruct, f64);
+
+    let _int_instance = IntegerStruct { value: 10 };
+    let _float_instance = FloatStruct { value: 3.14 };
+}
+</code></pre><h3 id="path"><code>path</code><a hidden class="anchor" aria-hidden="true" href="#path">#</a></h3>
+<p>There could be other use cases, but I found &ldquo;Path&rdquo; is particularly useful when you want to pass an enum <em>value</em> to the macro. See below,</p>
+<pre tabindex="0"><code>enum Value {
+    I32(i32),
+    I64(i64),
+}
+
+macro_rules! map_num_types {
+    ($type:ty, $enum:path) =&gt; {
+        impl From&lt;$type&gt; for Value {
+            fn from(n: $type) -&gt; Self {
+                $enum(n)
+            }
+        }
+    };
+}
+
+map_num_types!(i32, Value::I32);
+map_num_types!(i64, Value::I64);
+
+fn main() {
+    let _i32_value: Value = 2.into();
+    let _i64_value: Value = 3.into();
+}
+</code></pre><h3 id="pat"><code>pat</code><a hidden class="anchor" aria-hidden="true" href="#pat">#</a></h3>
+<p>With this, we can pass a pattern to a macro which can be used as an arm of a match expression. For example,</p>
+<pre tabindex="0"><code>macro_rules! assert_match {
+    ($exp:expr, $pattern:pat) =&gt; {
+        match $exp {
+            $pattern =&gt; {}
+            _ =&gt; panic!(&#34;Failed match&#34;),
+        }
+    }
+}
+
+fn main() {
+    let value = 5;
+    assert_match!(value, 3 | 5 | 7);
+}
+</code></pre><h3 id="pat-param"><code>pat-param</code><a hidden class="anchor" aria-hidden="true" href="#pat-param">#</a></h3>
+<p>When <code>:pat</code> was introduced first, it didn&rsquo;t match against <code>|</code> so you can have a pattern separator like <code>$pattern1 | $pattern2</code>. However, a breaking change was introduced in Rust 2021 to allow <code>:pat</code> to match the pipe inside it. Thereby not allowing a pipe separator after <code>:pat</code>. So, to be able to use a pipe as a macro argument separator, we need to use <code>:pat-param</code>. See <a href="https://doc.rust-lang.org/edition-guide/rust-2021/or-patterns-macro-rules.html">this</a> for more details. Sample code below,</p>
+<pre tabindex="0"><code>macro_rules! assert_match {
+    ($exp:expr, $pattern1:pat_param | $pattern2:pat) =&gt; {
+        match $exp {
+            $pattern1 =&gt; {
+                println!(&#34;Pattern 1 match&#34;);
+            }
+            $pattern2 =&gt; {
+                println!(&#34;Pattern 2 match&#34;);
+            }
+            _ =&gt; panic!(&#34;Failed match&#34;),
+        }
+    }
+}
+
+fn main() {
+    let value = 2;
+    assert_match!(value, 1 | 2);
+}
+</code></pre><h3 id="meta"><code>meta</code><a hidden class="anchor" aria-hidden="true" href="#meta">#</a></h3>
+<p>Meta specifier is used to send <code>#[xxx]</code> type attributes to the macro. Let us extend our <code>create_struct</code> to support attributes as well,</p>
+<pre tabindex="0"><code>macro_rules! create_struct {
+    ($struct_name:ident, $field_type:ty) =&gt; {
+        struct $struct_name {
+            value: $field_type,
+        }
+    };
+
+    ($struct_name:ident, $field_type:ty, $($meta:meta),*) =&gt; {
+        $(#[$meta])*
+        struct $struct_name {
+            value: $field_type,
+        }
+    };
+}
+
+fn main() {
+    create_struct!(IntegerStruct, i32);
+    create_struct!(FloatStruct, f64, derive(Debug));
+
+    let _int_instance = IntegerStruct { value: 10 };
+    let _float_instance = FloatStruct { value: 3.14 };
+}
+</code></pre><h3 id="literal">literal<a hidden class="anchor" aria-hidden="true" href="#literal">#</a></h3>
+<p>We can use a Literal specifier if we want to ensure that the macro invocation uses a literal instead of an expression or variable.</p>
+<pre tabindex="0"><code>struct Config {
+    host: &amp;&#39;static str,
+}
+
+macro_rules! create_config {
+    ($host:literal) =&gt; {
+        Config { host: $host }
+    };
+}
+
+fn main() {
+    let config = create_config![&#34;127.0.0.1&#34;];
+}
+</code></pre><p>Compilation will fail even if we use a variable that holds a string literal.</p>
+<pre tabindex="0"><code>fn main() {
+    let host = &#34;127.0.0.1&#34;;
+
+    // Compilation Fail : no rules expected this token in macro call
+    let config = create_config![host];
+}
+</code></pre><h3 id="vis"><code>vis</code><a hidden class="anchor" aria-hidden="true" href="#vis">#</a></h3>
+<p>This specifier can be used to pass a visibility modifier to the macro. Like <code>pub</code> or <code>pub(crate)</code> or even nothing! Let us use this to extend our <code>create_struct!</code> macro,</p>
+<pre tabindex="0"><code>macro_rules! create_struct {
+    ($access:vis $struct_name:ident, $field_type:ty) =&gt; {
+        $access struct $struct_name {
+            value: $field_type,
+        }
+    };
+}
+
+fn main() {
+    create_struct!(pub IntegerStruct, i32);
+    create_struct!(FloatStruct, f64);
+
+    let _int_instance = IntegerStruct { value: 10 };
+    let _float_instance = FloatStruct { value: 3.14 };
+}
+</code></pre><h3 id="lifetime"><code>lifetime</code><a hidden class="anchor" aria-hidden="true" href="#lifetime">#</a></h3>
+<p>A lifetime fragment specifier is useful when you want to pass an existing lifetime into a macro. For example, you want to create an <code>impl</code> function on a type that has a lifetime parameter. Like below,</p>
+<pre tabindex="0"><code>macro_rules! create_fn_new {
+    ($lt:lifetime, $field_type:ty) =&gt; {
+        fn new(num: &amp;$lt $field_type) -&gt; Self {
+            Self {
+                value: num
+            }
+        }
+    };
+}
+
+struct IntegerStruct&lt;&#39;a&gt; {
+    value: &amp;&#39;a i32
+}
+
+impl&lt;&#39;a&gt; IntegerStruct&lt;&#39;a&gt; {
+    create_fn_new! {&#39;a, i32}
+}
+
+fn main() {
+    let _instance = IntegerStruct::new(&amp;10);
+}
+</code></pre><h3 id="tt"><code>tt</code><a hidden class="anchor" aria-hidden="true" href="#tt">#</a></h3>
+<p>Also called a Token Tree, this is the most flexible of all fragment specifiers. A token tree is anything that wraps in a <code>()</code>, <code>{}</code>, or <code>[]</code>. Or it can be a <em>single</em> token. The catch is then we cannot use this macro argument where some of the fragment specifier type rules are applicable. It is still possible to use Token Tree for many of the examples we mentioned above, but for example, we cannot use <code>tt</code> type argument as the arm of a <code>match</code>, we definitely need <a href="#pat"><code>pat</code></a> for that.</p>
+<p>With flexibility comes responsibility, so be diligent in using this specifier. Avoid it as much as possible to catch your errors early and in the right places.</p>
+<p>One particular example where I found Token Tree is useful is,</p>
+<pre tabindex="0"><code>macro_rules! my_println {
+    ($($arg:tt)*) =&gt; {
+        use std::io::Write;
+        std::io::stdout().write(format!($($arg)*).as_bytes());
+    };
+}
+fn main() {
+    my_println!(&#34;{} {}&#34;, &#34;foo&#34;, &#34;bar&#34;);
+}
+</code></pre><h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>While we talked about the arguments to a macro, we didn&rsquo;t discuss much about the type of return values. In general, the returns of a macro should be compatible with the exact position where the macro is invoked. We did touch a few of those, for example in <a href="#expr"><code>expr</code></a> example, the macro returns an Expression as well, and in <a href="#ident"><code>ident</code></a> example, the macro returns an Item. Maybe we can write another blog covering this.</p>
+<p>So that was a summary of all the Fragment Specifiers that Rust supports as of today. There were a few macro features like <a href="https://veykril.github.io/tlborm/decl-macros/patterns/internal-rules.html">Internal Rules</a> which we left out intentionally, but if you are interested I strongly recommend <a href="https://veykril.github.io/tlborm/introduction.html">The Little Book of Rust Macros</a>.</p>
+<p>All the code in this blog was tested using <a href="https://play.rust-lang.org/">Rust Playground</a>. If you feel something is not right, please feel free to drop an email.</p>
+<p>Thanks for reading!</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2024 <a href="https://anoopelias.github.io">Anoop&#39;s page</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
