@@ -5,66 +5,79 @@
     <link>https://anoopelias.github.io/categories/tech/</link>
     <description>Recent content in tech on Anoop&#39;s page</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 04 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://anoopelias.github.io/categories/tech/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <lastBuildDate>Sun, 04 Feb 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://anoopelias.github.io/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Fragment specifiers in Rust Macros</title>
       <link>https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/</link>
       <pubDate>Sun, 04 Feb 2024 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/fragment-specifiers-in-rust-macros/</guid>
       <description>Rust macros seemed like an enigma when I first saw it, but once I started understanding it a bit, it&amp;rsquo;s not all that bad!
 &amp;ldquo;Fragment specifiers&amp;rdquo; are what you see as the &amp;ldquo;type&amp;rdquo; of an argument that you might see in the invocation of the macro. The most common being expr. Like below,
 macro_rules! add_two_numbers { ($num1:expr, $num2:expr) =&amp;gt; { $num1 + $num2 }; } fn main() { let _result = add_two_numbers!</description>
     </item>
+    
     <item>
       <title>Introduction to WebAssembly</title>
       <link>https://anoopelias.github.io/posts/intro-to-wasm/</link>
       <pubDate>Wed, 25 Oct 2023 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/intro-to-wasm/</guid>
       <description>I had some experience with Clojure sometime back, those folks will teach Clojure extensively over REPL. I felt that the Lisp-like format is well suited for REPL-driven development. And when I saw the WebAssembly (Wasm) text format - which is very much a Lisp-based format - I thought, why not?
 So here I am, showing off my REPL for Wasm - wasmrepl - to talk about a few Wasm instructions and show how it works.</description>
     </item>
+    
     <item>
       <title>LLVM Compile Stages</title>
       <link>https://anoopelias.github.io/posts/llvm-compile-stages/</link>
       <pubDate>Sun, 27 Aug 2023 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/llvm-compile-stages/</guid>
       <description>While working on the previous blog post, I went on a tangent and tried to solve it by looking a bit more deeply into LLVM architecture. While that tangent was not fruitful for that post, I thought I would write those findings in another!
 LLVM is a collection of software tools that can parse, optimize, and link several programming languages into several targets.
 The main programming languages that use LLVM are,</description>
     </item>
+    
     <item>
       <title>WASM Micro Runtime with Rust</title>
       <link>https://anoopelias.github.io/posts/wasm-micro-runtime-with-rust/</link>
       <pubDate>Sun, 30 Jul 2023 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/wasm-micro-runtime-with-rust/</guid>
       <description>Traditionally, microcontrollers are known to be able to run only C code. Firmware developers will usually have an Eclipse-based IDE as well as a custom compiler toolchain to compile the code against the target. This has been changing a lot. For example, MicroPython has become popular recently. RaspberryPi Pico, ExpressIf&amp;rsquo;s ESP32 are some microcontrollers that have fairly good support for MicroPython. See antirez&amp;rsquo;s talk32 project, which attempts to improve the MicroPython tooling and developer workflow for ESP32.</description>
     </item>
+    
     <item>
       <title>Event Loop in Go</title>
       <link>https://anoopelias.github.io/posts/event-loop-in-go/</link>
       <pubDate>Sun, 05 Mar 2023 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/event-loop-in-go/</guid>
       <description>“Single Threaded Even Loop” or simply “Event Loop” is a fairly well-known concept in the programming world. This concept was popularized early on by GUI frameworks and JavaScript engines running in browsers and later by Node.js as well. The important advantage of this construct is we can stop worrying about “thread safety” altogether. Thread safety comes for free because all you have is only one thread anyway.
 Another great example of usage of a Single Threaded Event Loop is Redis.</description>
     </item>
+    
     <item>
       <title>Network Address Translation</title>
       <link>https://anoopelias.github.io/posts/network-address-translation/</link>
       <pubDate>Tue, 01 Oct 2019 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/posts/network-address-translation/</guid>
       <description>I had a Raspberry Pi 3 lying around, and I had a great idea. Let&amp;rsquo;s host a Tor relay! This is the story of that failed mission.
 To host a Tor relay, you need two things,
 A fairly good internet connection, A computer that can be online almost all the time, or so I thought. But the devil is in the details! We will get there in due course.
 Pi Setup The Pi already had an SD card.</description>
     </item>
+    
     <item>
       <title>Side Projects</title>
       <link>https://anoopelias.github.io/side-projects/side-projects/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
       <guid>https://anoopelias.github.io/side-projects/side-projects/</guid>
       <description> REPL for Wasm - wasmrepl WASM Micro Runtime (WAMR) over ESP32 Redis implementation in Go Solutions to Advent of Code Tranquility Calendar Boids Simulation Cryptopals solutions in Rust </description>
     </item>
+    
   </channel>
 </rss>
